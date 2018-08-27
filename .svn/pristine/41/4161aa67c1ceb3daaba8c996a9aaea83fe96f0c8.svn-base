@@ -1,0 +1,7 @@
+<div id="fullPage">
+	<!-- <app-header></app-header> -->
+	<block-ui>
+	<router-outlet></router-outlet>
+	</block-ui>
+   	<!-- <app-footer></app-footer> -->
+</div>

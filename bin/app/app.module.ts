@@ -1,0 +1,103 @@
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { AppComponent } from './app.component';
+import { HeaderComponent } from './header/header.component';
+import { LoginFormComponent } from './login-form/login-form.component';
+import { FooterComponent } from './footer/footer.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { ReportComponent } from './report/report.component';
+import { RouterModule, Routes } from '@angular/router';
+import { AuthguardGuard } from './authguard.guard';
+import { UserService } from './user.service'
+import { UserComponent } from './user/user.component';
+import { NotfoundComponent } from './notfound/notfound.component';
+import { HttpModule } from '@angular/http';
+import { User } from './user';
+import { BlockUIModule } from 'ng-block-ui';
+import { NgIdleKeepaliveModule } from '@ng-idle/keepalive';
+import { InputTextModule, ButtonModule, DialogModule, SharedModule } from 'primeng/primeng';
+import { ReportService } from './report/report.service';
+import { ViewReportComponent } from './report/view-report/view-report.component';
+import { ViewReportService } from './report/view-report/viewReportService';
+import { AvatarModule } from 'ngx-avatar';
+import { NavigatorComponent } from './navigator/navigator.component';
+import { SimpleTimer } from 'ng2-simple-timer';
+
+const appRoutes: Routes = [
+    {
+        path: 'users',
+        pathMatch: 'full',
+        children: [
+            {
+                path: ':name',
+                component: UserComponent
+            },
+            {
+                path: ':name/:id',
+                component: UserComponent
+            }
+        ]
+    },
+    {
+        path: 'dashboard',
+        children: [
+            { path: '', component: DashboardComponent },
+            {
+            	path: ':name',
+            	children: [
+            		{ path: '', component: DashboardComponent },
+            		{
+            	        path: 'createNewReport',
+            	        component: ReportComponent
+            	    },
+            	    {
+            	        path: 'viewReport',
+            	        component: ViewReportComponent
+            	    },
+            	]
+            }
+            ]
+    }, 
+    {
+        path: '',
+        //redirectTo: 'users/mehulmpt/1',
+        pathMatch: 'prefix',
+        component: LoginFormComponent
+    },
+    
+    {
+        path: '**',
+        component: LoginFormComponent
+    }
+
+]
+
+@NgModule( {
+    declarations: [
+        AppComponent,
+        HeaderComponent,
+        LoginFormComponent,
+        FooterComponent,
+        DashboardComponent,
+        UserComponent,
+        NotfoundComponent,
+        ReportComponent,
+        ViewReportComponent,
+        NavigatorComponent,
+    ],
+    imports: [
+        RouterModule.forRoot( appRoutes ),
+        BrowserModule,
+        FormsModule,
+        HttpModule,
+        InputTextModule,
+        BlockUIModule,
+        AvatarModule,
+        NgIdleKeepaliveModule.forRoot()
+    ],
+    providers: [UserService, AuthguardGuard, User, ReportService, ViewReportService, SimpleTimer],
+    bootstrap: [AppComponent]
+} )
+
+export class AppModule { }

@@ -1,0 +1,130 @@
+.userTitleFrame{
+	text-align: right !important; 
+	margin-right: 4% !important;
+}
+.userTitle{
+	font-size:25px !important; 
+	font-weight:500 !important;
+}
+
+.logoutStyle{
+	font-size: 22px !important; 
+	cursor:pointer;
+}
+
+.container {
+   position: relative;
+    /* top: -257px; */
+    bottom: 200px;
+}
+.mainRowFrame{
+	padding-left: 35px !important; 
+	margin-bottom: 0px !important;
+}
+
+.layout{
+	padding-right: 6% !important;
+}
+
+.headingBorder{
+	border-bottom: 1px solid #bbb8b8 !important;
+	margin-top: -2% !important;
+    margin-bottom: 1% !important;
+}
+
+.headingStyle{
+	font-size: 20px !important;
+	margin-left: 3%;
+}
+
+.filterRow{
+	margin-top: 1% !important;
+    margin-bottom: 1% !important;
+    border: 1px solid #bbb8b8 !important;
+    border-radius: 8px !important;
+    padding: 5px !important;
+    margin: 5%;
+}
+
+.filterText{
+	padding-right: 0px !important;
+}
+.filterName{
+	font-size: 18px !important;
+}
+
+.filterSelectBox{
+	padding-left: 0px !important;
+}
+
+.textStyle {
+	text-align: center !important;
+	font-family: serif !important;
+}
+
+.modalWidth{
+	width: 55% !important;
+}
+.modalHeader{
+	padding: 10px !important;
+}
+
+.modaltitle{
+	font-size:18px !important;
+	padding-left: 16px;
+}
+
+.modalContainerFluid{
+	padding: 0 10px !important;
+}
+
+.rowCSS{
+	width: 100% !important;
+}
+
+.rowPaddingCSS{
+	width: 100% !important;
+	padding-top: 10px !important;
+}
+
+.filterLabel{
+	font-size: 15px !important;
+    float: right !important;
+    padding-top: 5px !important;
+}
+
+.inputFieldCSS{
+	width:100% !important;
+}
+
+.dateGrid{
+	    display:inline-flex !important;
+}
+
+.dateFieldLabel{
+	font-size: 12px !important;
+    padding-top: 9px !important;
+    padding-right: 4px !important;
+}
+
+.radioButtonGrid{
+	padding-top: 10px !important;
+}
+.radioButtonLabel{
+	font-size: 14px !important;
+}
+.modalFooter{
+	padding: 8px;
+}
+table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    color: black;
+}
+
+.reportTableClass{
+	margin-left: 2% !important; 
+	width: 95% !important; 
+	margin-top: 2% !important;
+}

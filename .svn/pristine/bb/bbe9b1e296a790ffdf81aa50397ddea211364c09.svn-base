@@ -1,0 +1,131 @@
+/* -----------------------------Notification Pop Up CSS ------------------------ */
+
+.notificationRow{
+	margin-bottom: 5px !important; 
+	margin-top: 5px !important;
+}
+
+.notificationTextDiv{
+	text-align: center !important;
+}
+
+.notificationText{
+	padding-top: 6px !important; 
+	padding-bottom: 6px !important; 
+	margin-bottom: 0px !important;
+}
+
+/* ------------------------------- View Report page CSS ------------------------- */
+
+.layout{
+	padding-right: 6% !important;
+}
+
+.headingBorder{
+	border-bottom: 1px solid #bbb8b8 !important;
+	margin-top: -2% !important;
+    margin-bottom: 1% !important;
+}
+
+.headingStyle{
+	font-size: 20px !important;
+	margin-left: 3%;
+}
+
+.filterRow{
+	margin-top: 1% !important;
+    margin-bottom: 1% !important;
+    border: 1px solid #bbb8b8 !important;
+    border-radius: 8px !important;
+    padding: 5px !important;
+    margin: 5%;
+}
+
+.filterText{
+	padding-right: 0px !important;
+}
+.filterName{
+	font-size: 18px !important;
+}
+
+.filterSelectBox{
+	padding-left: 0px !important;
+}
+
+
+/* -----------------------------Filter Modal CSS -------------------------- */
+.modalWidth{
+	width: 55% !important;
+}
+.modalHeader{
+	padding: 10px !important;
+}
+
+.modaltitle{
+	font-size:18px !important;
+	padding-left: 16px;
+}
+
+.modalContainerFluid{
+	padding: 0 10px !important;
+}
+
+.rowCSS{
+	width: 100% !important;
+}
+
+.rowPaddingCSS{
+	width: 100% !important;
+	padding-top: 10px !important;
+}
+
+.filterLabel{
+	font-size: 14px !important;
+    padding-top: 5px !important;
+}
+
+.filterField{
+	padding-bottom:6% !important;
+}
+.filterSelectBoxes{
+	width:100% !important;
+}
+
+.filterValueField{
+	padding-top: 5px !important;
+}
+
+.inputFieldCSS{
+	width:100% !important;
+}
+
+.modalFooter{
+	padding: 8px;
+}
+table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    color: black;
+}
+
+.reportTableClass{
+	margin-left: 2% !important; 
+	width: 95% !important; 
+	margin-top: 2% !important;
+}
+
+.errorMsg{
+	font-size: 12px;
+    color: red;
+}
+.ng-valid[required], .ng-valid.required{
+border-left: 2px solid green;
+}
+
+input.ng-invalid{
+border-left: 1px solid red;
+}
+select.ng-invalid{
+border-left: 1px solid red;
+}

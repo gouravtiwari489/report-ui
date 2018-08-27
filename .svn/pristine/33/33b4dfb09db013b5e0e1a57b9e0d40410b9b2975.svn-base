@@ -1,0 +1,29 @@
+<div class="container">
+	<div class="row" id="pwd-container">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
+			<section class="login-form">
+    			<form (submit)="loginUser($event)" role="login">
+          			<img src="http://www.osius.com/wp-content/themes/osius/images/logo.png" class="img-responsive" alt="" />
+
+	        		<input type="text" name="username" placeholder="User Name" required class="form-control input-lg" [(ngModel)]="loginUser.username" />
+	        		<input type="password" class="form-control input-lg" name="password" id="password" placeholder="Password" required="" [(ngModel)]="loginUser.password"/>
+
+		        	<div class="alert alert-danger alert-dismissible" [hidden]="errorMessage === ''" id="successMessage" style="padding-top: 6px;padding-bottom: 6px;margin-bottom: 0px">
+						<a class="close" data-dismiss="" aria-label="close" (click)="closeMessageBox('error')">&times;</a>
+						<strong>Error!</strong> {{errorMessage}}
+					</div>
+					<div class="alert alert-warning alert-dismissible" [hidden]="warningMessage === ''" style="padding-top: 6px;padding-bottom: 6px;margin-bottom: 0px">
+						<a class="close" data-dismiss="" aria-label="close" (click)="closeMessageBox('warning')">&times;</a>
+						{{warningMessage}} Still you want to <strong><a (click)="continueLogin()">continue</a></strong>
+					</div>
+	          
+	          		<button type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
+		        	<div>
+		            	<a href="#">Create account</a> or <a href="#">reset password</a>
+		          	</div>
+        		</form>
+      		</section>  
+    	</div>
+  	</div>     
+</div>

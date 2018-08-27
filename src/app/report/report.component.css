@@ -1,0 +1,257 @@
+/* -----------------------------Notification Pop Up CSS ------------------------ */
+
+.notificationRow{
+	margin-bottom: 5px !important; 
+	margin-top: 5px !important;
+}
+
+.notificationTextDiv{
+	text-align: center !important;
+}
+
+.notificationText{
+	padding-top: 6px !important; 
+	padding-bottom: 6px !important; 
+	margin-bottom: 0px !important;
+}
+
+/* ----------------------------- Report CSS  ------------------------ */
+
+.cardFrame{
+	padding: 1% !important;
+}
+
+.reportForm {
+	border: 1px solid gray;
+	padding: 1%;
+	padding-bottom: 4%;
+	width: 95%;
+	margin-left: 2%;
+    margin-top: 2%;
+    box-shadow: 1px 1px 1px 1px #aba4a4;
+}
+
+.textStyle {
+	text-align: center !important;
+	font-family: serif !important;
+	font-size: 20px; 
+	margin-top: 4px !important
+}
+
+.hrClass{
+	margin: 0px !important;
+}
+
+.reportRow{
+	margin: 2% !important;
+}
+
+.reportNameDiv{
+	margin-left:13px !important;
+}
+
+.reportNamecss{
+	margin-bottom: 2px !important; 
+	margin-top: 2px !important; 
+	font-size: 15px !important;
+}
+
+.errorMsg{
+	font-size: 12px;
+    color: red;
+}
+
+.reportPurposeDiv{
+	margin-left:3% !important;
+}
+
+.reportPurposecss{
+	margin-bottom: 2px !important;
+	margin-top: 2px !important; 
+	font-size: 15px !important;
+}
+
+.grideClass {
+	margin-left: 10%;
+	display: grid;
+	grid-template-columns: 35% 5% 35% 15%;
+	grid-column-gap: 50px;
+}
+
+.ColumnTemplatecss{
+	margin-bottom: 2px !important; 
+	margin-top: 2px !important; 
+	font-size: 15px !important;
+}
+
+.ColumnFieldHeight{
+	height: 250px !important;
+}
+
+.operationButton{
+	margin-top: 50px !important;
+}
+
+.operationBtnGap{
+	margin-bottom: 25px !important;
+}
+.columnMovingButton{
+	width: 30px !important;
+	height: 28px !important;
+}
+
+.moveButtons{
+	margin-left: -45px !important;
+	margin-top: 75% !important;
+}
+
+.deleteCustomColumnButton{
+	height: 26px !important;
+    width: 30px !important;
+}
+
+/* ----------------------------- Image Radio Button CSS  ------------------------ */
+
+
+ input[type="radio"]:checked+span
+{
+	font-weight: bold;
+}
+
+.imgIcon{
+	text-align: center;
+	cursor: pointer;
+}
+
+img {
+	height: 50px;
+}
+
+.imgTag{
+	font-size: 14px !important;
+}
+
+.bgClass{
+	border: 2px solid #f3f3f7;
+	box-shadow: 1px 1px 1px 1px gray;
+}
+
+.imgRow{
+    padding-left: 13%;
+    padding-right: 7%;
+    margin-bottom: 2%;	
+}
+
+
+/* ----------------------------- Filter Section CSS  ------------------------ */
+
+.filterTag{
+	text-align: center !important;
+	font-family: serif !important;
+	font-size: 16px; 
+}
+
+.filterRow{
+	padding-left:13% !important; 
+	width: 90% !important;
+	margin-bottom: 2%;
+}
+
+.filterField{
+	padding-bottom:6% !important;
+}
+
+.filterSelectBoxes{
+	width:100% !important;
+}
+
+.filterValueField{
+	padding-top: 5px !important;
+}
+
+
+/* ----------------------------- Order_by & Group_by Section CSS ------------------------ */
+
+.orderNGroupbyRow{
+	padding-left:13% !important; 
+	width: 90% !important;
+}
+
+.orderGroupTag{
+	font-size: 14px !important; 
+	margin-left: -4% !important;
+}
+
+.orderBySelectBox{
+	width: 80% !important;
+    margin-top: 2px !important;
+}
+
+.orderfieldsPadding{
+	margin-top: 2px !important;
+}
+
+.groupByColumnfields{
+	margin-top: 2px !important;
+	width:50% !important;
+}
+.groupByOprtnField{
+	margin-top: 2px !important;
+	width: 25% !important;
+    margin-left: 5px !important;
+}
+
+.saveButtonRow{
+	float: right !important; 
+	margin-right: 10% !important; 
+	padding-top:1% !important;
+}
+.ng-valid[required], .ng-valid.required{
+border-left: 2px solid green;
+}
+
+input.ng-invalid{
+border-left: 1px solid red;
+}
+select.ng-invalid{
+border-left: 1px solid red;
+}
+.selectLength{
+	border-left: 2px solid green;
+}
+.selectDefault{
+border-left: 1px solid red;	
+}
+
+/* ----------------------------- Duplicate Column pop up Section CSS ------------------------ */
+
+.modalHeader{
+	padding: 10px !important;
+}
+
+.modaltitle{
+	font-size:16px !important;
+	padding-left: 16px;
+}
+
+.modalContainerFluid{
+	padding: 0 10px !important;
+}
+
+.rowCSS{
+	width: 100% !important;
+	font-size: 14px !important;
+}
+
+.inputFieldCSS{
+	width:100% !important;
+}
+
+.noRecordsText{
+	padding-top: 10px !important;
+	font-size: 15px !important; 
+}
+
+.modalFooter{
+	padding: 6px;
+}

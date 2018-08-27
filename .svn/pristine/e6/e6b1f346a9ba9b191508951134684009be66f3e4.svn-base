@@ -1,0 +1,298 @@
+<app-navigator></app-navigator>
+<div class="page forms-page">
+	<app-header></app-header>
+	<section>
+		<div class="card">
+			<div class="card-body" style="padding: 1%">
+				<form #reportForm="ngForm" class="reportForm">
+					<p class="textStyle"
+						style="font-size: 20px; margin-top: 4px !important">Create
+						Timesheet Report</p>
+					<hr style="margin: 0px !important">
+
+<!-- 					<div class="row headerDiv">
+						<li class="col-sm-4"
+							[ngClass]="{headerBackground: reportDetailTab}"
+							style="font-size: 20px; padding-top: 4px; padding-left: 40px; list-style: none;">
+						 <a style="cursor: pointer" (click)="showTab('reportDetails')">Report
+								Details </a> <i [hidden]="!reportDetailTab" style="color: black"
+							class="material-icons right">arrow_forward</i>
+						</li>
+						<li class="col-sm-4" [ngClass]="{headerBackground: orderByTab}"
+							style="font-size: 20px; padding-top: 10px; padding-left: 40px; list-style: none;">
+						 <a style="cursor: pointer" (click)="showTab('orderBy')"> Order
+								By</a> <i [hidden]="!orderByTab" style="color: black"
+							class="material-icons right">arrow_forward</i>
+						</li>
+						<li class="col-sm-4" [ngClass]="{headerBackground: groupByTab}"
+							style="font-size: 20px; padding-top: 10px; padding-left: 40px; list-style: none;">
+							<a style="cursor: pointer" (click)="showTab('groupBy')">
+								Group By</a>
+						</li>
+					</div> -->
+					<div *ngIf="reportDetailTab" style="margin: 2%;" class="row"
+						[style.display]="hideContent?'inherit':'none'">
+						<div class="row">
+							<div class="col-sm-1"></div>
+							<div class="col-sm-4 form-group">
+								<span
+									style="margin-bottom: 2px; margin-top: 2px; font-size: 15px;">Report
+									Name<font color="red">*</font></span>
+								<!-- <label class="textStyle" for="report_name">Report Name</label> -->
+								<input type="text" name="report_name"
+									[(ngModel)]="newReport.reportName" class="form-control" required>
+							</div>
+							<div class="col-sm-2"></div>
+							<div class="col-sm-4 form-group">
+								<span
+									style="margin-bottom: 2px; margin-top: 2px; font-size: 15px;">Report
+									Purpose</span>
+								<!-- <label class="textStyle" for="report_purpose" >Report Purpose</label> -->
+								<input type="text" name="report_purpose"
+									[(ngModel)]="newReport.purpose" class="form-control">
+							</div>
+							<div class="col-sm-1"></div>
+						</div>
+						<div class="grideClass">
+							<div name="columnList">
+								<!-- <h5>Available Columns</h5> -->
+								<span
+									style="margin-bottom: 2px; margin-top: 2px; font-size: 15px;">Select Required Fields
+									</span> <select name="colums" id="multiselect"
+									class="form-control" [(ngModel)]="availableColumns" multiple
+									style="height: 250px;">
+									<option *ngFor="let column of listOfColumns" [value]="column">{{column.columnDisplayName}}</option>
+								</select>
+							</div>
+
+							<div style="margin-top: 90%;">
+								<button type="button" id="js_right_All_1"
+									(click)="addToExcludedALL(test)"
+									class="btn waves-effect light-blue darken-4 waves-light"
+									data-toggle="tooltip" title="Import All Column"
+									style="margin-bottom: 10px !important;">
+									<i class="glyphicon glyphicon-forward"></i>
+								</button>
+								<br>
+								<button type="button" id="js_right_Selected_1"
+									(click)="addToExcludedRepeat()"
+									class="btn waves-effect light-blue darken-4 waves-light"
+									data-toggle="tooltip" title="Import Selected Column"
+									style="margin-bottom: 10px !important;">
+									<i class="glyphicon glyphicon-chevron-right"></i>
+								</button>
+								<br>
+								<button type="button" id="js_left_Selected_1"
+									(click)="removeFromExcludedRepeat()"
+									class="btn waves-effect light-blue darken-4 waves-light"
+									data-toggle="tooltip" title="Export Selected Column"
+									style="margin-bottom: 10px !important;">
+									<i class="glyphicon glyphicon-chevron-left"></i>
+								</button>
+								<br>
+								<button type="button" id="js_left_All_1"
+									(click)="removeFromExcludedALL()"
+									class="btn waves-effect light-blue darken-4 waves-light"
+									data-toggle="tooltip" title="Export All Column">
+									<i class="glyphicon glyphicon-backward"></i>
+								</button>
+
+							</div>
+							<div name="columnList">
+								<!-- <h5>Selected Columns</h5> -->
+								<span
+									style="margin-bottom: 2px; margin-top: 2px; font-size: 15px;">Selected
+									Fields <font color="red">*</font></span> <select name="colums" id="multiselect"
+									class="form-control" [(ngModel)]="selectedColumn" multiple
+									style="height: 250px;" required>
+									<option *ngFor="let column of selectedColumns" [value]="column">{{column.columnDisplayName}}</option>
+								</select>
+							</div>
+						</div>
+						<br>
+					</div>
+<!-- 					<div class="row" style="margin-top: 2%" *ngIf="orderByTab">
+						<div class="row">
+							<div class="col-sm-2"></div>
+							<div class="col-sm-2">
+								<span style="font-size: 16px;">Order By</span>
+							</div>
+							<div class="col-sm-6" id="orderByList">
+								<p class="col-sm-12"
+									*ngFor="let order of newReport.orderByList; let i=index">
+									<select class="form-control col-sm-10" name="orderByList_{{i}}"
+										[(ngModel)]="newReport.orderByList[i]" style="width: 70%">
+										<option value="" disabled>-Select Order By-</option>
+										<option *ngFor="let column of selectedColumns"
+											[disabled]="column.disable" [ngValue]="column.columnName">{{column.columnName}}</option>
+									</select> <span class="col-sm-1"><button type="button"
+											class="btn btn-primary" data-toggle="tooltip" title="Remove"
+											(click)='removeOrderByList(i)'>
+											<i class="small material-icons">remove</i>
+										</button></span> <span *ngIf="i == newReport.orderByList.length-1"
+										disabled="newReport.orderByList[i] ==''" class="col-sm-1"><button
+											type="button" class="btn btn-primary" data-toggle="tooltip"
+											title="Add More" (click)='addOrderByList(i)'>
+											<i class="small material-icons">add</i>
+										</button></span>
+
+								</p>
+
+							</div>
+							<div class="col-sm-2"></div>
+						</div>
+
+
+						<div class="row" style="float: right; margin-right: 4%;"></div>
+					</div> -->
+<!-- 					<div class="row" class="row"
+						style="margin-left: 10%; margin-top: 2%" *ngIf="groupByTab">
+						<div class="row">
+							<div class="col-sm-3">
+								<span style="font-size: 16px;">Aggregation On</span>
+							</div>
+							<div class="col-sm-6" id="orderByList">
+								<div class="row">
+									<p class="col-sm-12"
+										*ngFor="let groupByList of newReport.groupByList; let i= index">
+										<span class="col-sm-6" style="padding-left: 0% !important;">
+											<select class="form-control" name="groupByList_{{i}}"
+											[(ngModel)]="groupByList.columnName">
+												<option value="" disabled selected>-Select
+													Aggregation1-</option>
+												<option *ngFor="let column of columns"
+													[value]="column.columnName" [disabled]="column.disable">{{column.columnName}}</option>
+										</select>
+										</span> <span class="col-sm-4" style="padding-left: 0% !important;">
+											<select class="form-control" name="operation{{i}}"
+											[(ngModel)]="groupByList.operation">
+												<option value="count" selected>Count</option>
+												<option value="1" disabled>Option 1</option>
+												<option value="2" disabled>Option 2</option>
+												<option value="3" disabled>Option 3</option>
+										</select>
+										</span> <span class="col-sm-1"><button type="button"
+												class="btn btn-primary" data-toggle="tooltip" title="Remove"
+												(click)='removeGroupByList(i)'>
+												<i class="small material-icons">remove</i>
+											</button></span> <span class="col-sm-1"
+											*ngIf="i == newReport.groupByList.length-1"><button
+												type="button" class="btn btn-primary" data-toggle="tooltip"
+												title="Add More" (click)='addGroupByList(i)'>
+												<i class="small material-icons">add</i>
+											</button></span>
+									</p>
+								</div>
+							</div>
+							<div class="col-sm-3"></div>
+						</div>
+						<div class="row" style="margin-bottom: 5px;">
+							<span class="col-sm-9"></span>
+						</div>
+					</div> -->
+					<div class="row">
+						<div class="row form-group rowCSS">
+			        		<div class="col-sm-3">
+								<span class="filterLabel">Filter Name :</span>
+							</div>
+							<div class="col-sm-8">
+								<input type="text" name="filter_name" class="form-control inputFieldCSS"
+										[(ngModel)]="filter.filterName" placeholder="Enter Filter name" required>
+							</div>
+	        			</div>
+			 	        	<div class="row  rowPaddingCSS">
+							<div class="col-sm-3">
+								<span class="filterLabel">Timesheet Date :</span>
+							</div>
+							<div class="col-sm-4 dateGrid">
+								<span class="dateFieldLabel" for="fromTimesheetDate">from</span>
+								<input type="date" [(ngModel)]="filter.fromDate" name="fromTimesheetDate" max="{{ maxDate | date : 'yyyy-MM-dd' }}"  
+										class="form-control inputFieldCSS" required>
+							</div>
+							<div class="col-sm-4 dateGrid">
+								<span class="dateFieldLabel" for="toTimesheetDate">to</span>
+								<input type="date" [(ngModel)]="filter.toDate" min="{{fromDate}}" name="toTimesheetDate"
+										 max="{{ maxDate | date : 'yyyy-MM-dd' }}" class="form-control inputFieldCSS" required>
+							</div> 
+						</div>
+						<div class="row rowPaddingCSS" >
+							<div class="col-sm-3">
+								<span class="filterLabel">Timesheet Approved:</span>
+							</div>
+							<div class="col-sm-4 dateGrid">
+								<span class="dateFieldLabel" for="fromApprovedTimesheetDate">from</span>
+								<input type="date" [(ngModel)]="filter.fromApprovedDate" max="{{ maxDate | date : 'yyyy-MM-dd' }}" 
+										name="fromApprovedTimesheetDate" class="form-control inputFieldCSS" required>
+							</div>
+							<div class="col-sm-4 dateGrid" >
+								<span class="dateFieldLabel" for="toApprovedTimesheetDate">to</span>
+								<input type="date" [(ngModel)]="filter.toApprovedDate" min="{{fromApprovedDate}}" name="toApprovedTimesheetDate"
+												 max="{{ maxDate | date : 'yyyy-MM-dd' }}" class="form-control inputFieldCSS" required>
+							</div>
+						</div>
+						<div class="row rowPaddingCSS">
+							<div class="col-sm-3" >
+								<span class="filterLabel">Projects:</span>
+							</div>
+							<div class="col-sm-2 radioButtonGrid">
+								<p class="form-group">
+									<input type="radio" id="projectInclude" class="with-gap"
+										name="projectIncludeExclude" [(ngModel)]="filter.isProjectInclude" [value]="true" [checked]="filter.isProjectInclude"/>
+										 <span  for="projectIncludeExclude" class="radioButtonLabel">Include</span>
+								</p>
+								<p class="form-group">
+									<input type="radio" id="projectExclude" class="with-gap" name="projectIncludeExclude"
+										 [(ngModel)]="filter.isProjectInclude" [value]="false" [checked]="!filter.isProjectInclude" [ngModelOptions]="{standalone: true}"/> 
+										<span for="projectIncludeExclude" class="radioButtonLabel">Exclude</span>
+								</p>
+							</div>
+							<div class="col-sm-6">
+								<select  multiple class="form-control" style="width:100% !important; height:100px !important;" name="projects">
+									<option *ngFor="let column of listOfColumnsCopy" [value]="project">{{column.columnDisplayName}}</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					
+				<div class="row" style="float: right; margin-right: 1%; padding-top:1%">
+					<!-- <span *ngIf="reportDetailTab">
+						<button type="button" class="btn btn-basic" name="next"
+							data-toggle="tooltip" title="Next" (click)="showTab('orderBy')">Next</button>
+					</span> --> 
+					<!-- <span *ngIf="orderByTab">
+						<button class="btn btn-basic" name="Previous"
+							data-toggle="tooltip" title="Previous"
+							(click)="showTab('reportDetails')">
+							<span>Previous</span>
+						</button>
+					</span>  -->
+					<!-- <span *ngIf="orderByTab">
+						<button class="btn btn-basic" name="Next"
+							data-toggle="tooltip" title="Next"
+							(click)="showTab('groupBy')">
+							<span>Next</span>
+						</button>
+					</span> -->
+					 <!-- <span *ngIf="groupByTab">
+						<button class="btn btn-basic" name="Previous"
+							data-toggle="tooltip" title="Previous"
+							(click)="showTab('orderBy')">
+							<span>Previous</span>
+						</button>
+					</span>  -->
+					<span>
+						<button class="btn btn-primary" name="saveNRun"
+							(click)="createReport()" data-toggle="tooltip"
+							title=" Save and Run" [disabled]="(!reportForm.valid) || (!selectedColumns.length >0) ">Save & Run</button>
+					</span>
+					 <span>
+						<button class="btn btn-primary" name="save" data-toggle="tooltip"
+							title="Save" [disabled]="(!reportForm.valid) || (!selectedColumns.length >0) ">Save</button>
+					</span>
+				</div>
+				</form>
+			</div>
+		</div>
+	</section>
+	<app-footer></app-footer>
+</div>

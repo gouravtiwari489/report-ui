@@ -1,0 +1,37 @@
+.reportForm {
+	border: 1px solid gray;
+	padding: 1%;
+	height: 750px;
+}
+
+.textStyle {
+	text-align: center !important;
+	font-family: serif !important;
+}
+
+.grideClass {
+	margin-left: 10%;
+	display: grid;
+	grid-template-columns: 35% 9% 35%;
+	grid-column-gap: 50px;
+	text-align: center;
+}
+
+.orderByFields {
+	float: right;
+}
+
+.detailBox {
+	border: 1px solid gray;
+}
+
+.orderByEle {
+	padding: 0px;
+	/* margin: 0px; */
+	width: 60%;
+}
+/* .container {
+   position: relative;
+    top: -257px;
+    bottom: 200px;
+} */

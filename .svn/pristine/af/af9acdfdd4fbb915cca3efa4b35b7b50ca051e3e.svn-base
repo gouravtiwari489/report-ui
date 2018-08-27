@@ -1,0 +1,196 @@
+<app-header></app-header>
+<div class="row mainRowFrame">
+	<div class="col-sm-2">
+		<app-navigator></app-navigator>
+	</div>
+	<div class="col-sm-10">
+		<div class="row">
+			<div class="col-sm-12 layout" >
+				<div class="row headingBorder">
+					<div class="row" style="margin-bottom: 5px; margin-top: 5px;">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-8" id="message"
+							[hidden]="successMessage === ''" style="text-align: center;">
+							<div class="alert alert-success alert-dismissible"
+								id="successMessage"
+								style="padding-top: 6px; padding-bottom: 6px; margin-bottom: 0px">
+								<a class="close" data-dismiss="" aria-label="close"
+									(click)="closeMessageBox('success')">&times;</a>
+								{{successMessage}}
+							</div>
+						</div>
+						<div class="col-sm-8" [hidden]="errorMessage === ''"
+							style="text-align: center;">
+							<div class="alert alert-danger alert-dismissible"
+								style="padding-top: 6px; padding-bottom: 6px; margin-bottom: 0px">
+								<a class="close" data-dismiss="" aria-label="close"
+									(click)="closeMessageBox('error')">&times;</a> {{errorMessage}}
+							</div>
+						</div>
+
+					</div>
+					<div class="row">
+						<div class="col-sm-9">
+							<span class="headingStyle">{{reportName}}</span>
+						</div>
+						<div class="col-sm-1"></div>
+						<div class="col-sm-1">
+							<span><a
+								class="btn waves-effect light-blue darken-4 waves-light"
+								data-toggle="tooltip" title=" Export PDF"
+								(click)="downloadFile(file)">PDF <i
+									class="tiny material-icons">picture_as_pdf</i></a></span>
+						</div>
+						<div class="col-sm-1">
+							<span><a
+								class="btn waves-effect light-blue darken-4 waves-light"
+								data-toggle="tooltip" title=" Export XLS ">XLS <i
+									class="tiny material-icons">filter_none</i></a></span>
+						</div>
+					</div>
+				</div>
+				<div class="row filterRow form-inline">
+					<div class="col-sm-3"></div>
+					<div class="col-sm-1 filterText"><div class="filterName">Filter : </div></div>
+					<div class="col-sm-4 filterSelectBox form-group">
+						<select class="form-control" style="width:90%">
+						    <option value="" disabled selected>Choose your Filter</option>
+						    <option *ngFor="let filter of filters" [value]="filter">{{filter.filterName}}</option>
+						</select>
+						<button type="button" class="btn btn-primary" 
+							data-toggle="tooltip" title="Add Filter" (click)='openModal()'>
+							<i class="small material-icons">add</i>
+						</button>
+					</div>
+					<div  class="col-sm-3"></div>
+					<!-- <div class="col s3 l3">Filter</div>
+					<div class="col s3 l3">
+						<span> <label>Group By</label><select class="form-control"
+							id="table" [(ngModel)]="groupBy" name="groupBy"
+							placeholder="select" required>
+								<option disabled selected>Group By</option>
+								<option *ngFor="let report of listOfColumns" [value]="report">
+									{{report}}</option>
+						</select></span>
+					</div>
+					<div class="col s3 l3">
+						<span><label>Order By</label> <select class="form-control"
+							id="table" [(ngModel)]="orderBy" name="orderBy"
+							placeholder="select" required>
+								<option disabled selected>select</option>
+								<option *ngFor="let report of listOfColumns" [value]="report">
+									{{report}}</option>
+						</select></span>
+						
+					</div>
+					<div class="col s3 l3">
+						<button (click)="filter(groupBy, orderBy)">Filter</button>
+					</div> -->
+				</div>
+				<div class="row">
+					<table class="bordered striped">
+						<thead>
+							<tr class="row">
+								<th class="col-sm-2" *ngFor="let header of reports[0]">{{header}}</th>
+							</tr>
+						</thead>
+						<tr class="row" *ngFor="let report of reports | slice:1:reports.length-1">
+							<td class="col-sm-2" *ngFor="let value of report" >{{value}}</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<app-footer></app-footer>
+
+<div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display':display}" style="height: max-content;">
+	<div class="modal-content" style="padding-bottom: 0px !important;">
+		<div class="modal-header" style="padding: 2px;">
+			<button type="button" class="close" aria-label="Close"	(click)="onCloseHandled()">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			<span class="modal-title" style="font-size:18px">Filter</span>
+		</div>
+		<div class="modal-body">
+			<div class="row">
+				<div class="col-sm-3" style=" padding-left: 0px !important; padding-right: 0px !important;">
+					<span style="font-size: 15px; float: right; margin-top: 10px;">Filter Name :</span>
+				</div>
+				<div class="col-sm-6">
+					<input type="text" name="filter_name"
+							[(ngModel)]="filter.filterName" placeholder="Enter Filter name" style=" margin-bottom: 0px !important;">
+				</div>
+				
+			</div>
+			<div class="row">
+				<div class="col-sm-3" style=" padding-left: 0px !important; padding-right: 0px !important;">
+					<span style="font-size: 15px; float: right; margin-top: 10px;">Timesheet Date :</span>
+				</div>
+				<div class="col-sm-1" style="padding-top: 10px">
+					<span>from</span>
+				</div>
+				<div class="col-sm-3" style=" padding-left: 0px !important; padding-right: 0px !important;">
+					<input type="date" [(ngModel)]="fromDate" max="{{ maxDate | date : 'yyyy-MM-dd' }}" style="height: 2rem; margin: 0px;" required>
+				</div>
+				<div class="col-sm-1" style="padding-top: 10px">
+					<span>to</span>
+				</div>
+				<div class="col-sm-3" style=" padding-left: 0px !important; padding-right: 0px !important;">
+					<input type="date" [(ngModel)]="toDate" min="{{fromDate}}"
+							 max="{{ maxDate | date : 'yyyy-MM-dd' }}" style="height: 2rem; margin: 0px;" required>
+				</div>
+			</div>
+			<div class="row" >
+				<div class="col-sm-3" style=" padding-left: 0px !important; padding-right: 0px !important;">
+					<span style="font-size: 15px; float: right; margin-top: 10px;">Timesheet Approved :</span>
+				</div>
+				<div class="col-sm-1" style="padding-top: 10px">
+					<span>from</span>
+				</div>
+				<div class="col-sm-3" style=" padding-left: 0px !important; padding-right: 0px !important;">
+					<input type="date" [(ngModel)]="fromApprovedDate" max="{{ maxDate | date : 'yyyy-MM-dd' }}" style="height: 2rem; margin: 0px;" required>
+				</div>
+				<div class="col-sm-1" style="padding-top: 10px">
+					<span>to</span>
+				</div>
+				<div class="col-sm-3" style=" padding-left: 0px !important; padding-right: 0px !important;">
+				<input type="date" [(ngModel)]="toApprovedDate" min="{{fromApprovedDate}}"
+									 max="{{ maxDate | date : 'yyyy-MM-dd' }}" style="height: 2rem; margin: 0px;" required>
+				</div>
+			</div>
+			<div class="row" style="margin-bottom: 10px;">
+				<div class="col-sm-3" style=" padding-left: 0px !important; padding-right: 0px !important;">
+					<span style="font-size: 15px; float: right; margin-top: 10px;">Projects:</span>
+				</div>
+				<div class="col-sm-3">
+					<p>
+						<input type="radio" id="projectInclude" class="with-gap"
+							name="projectIncludeExclude" [(ngModel)]="filter.isProjectInclude" [value]="true" [checked]="filter.isProjectInclude"/>
+							 <label for="projectInclude"> <span>Include</span></label>
+					</p>
+					<p>
+						<input type="radio" id="projectExclude" class="with-gap"
+							name="projectIncludeExclude" [(ngModel)]="filter.isProjectInclude" [value]="false" [checked]="!filter.isProjectInclude"/> 
+							<label for="projectExclude"> <span>Exclude</span></label>
+					</p>
+				</div>
+				<div class="col-sm-6">
+					<select class="browser-default" multiple style="height: 100px;" [(ngModel)]="filter.projects">
+						<option *ngFor="let project of projects" [value]="project">{{project.projectName}}</option>
+					</select>
+				</div>
+			</div>
+			<p align="center">
+				<button type="button" class="btn waves-effect light-blue darken-4 waves-light" 
+								data-toggle="tooltip" title="Save & Apply"  (click)="createFilter()"> Save & Apply
+				</button>
+				<button type="button" class="btn waves-effect light-blue darken-4 waves-light" 
+								data-toggle="tooltip" title="Save"  (click)="onCloseHandled()"> Save
+				</button>
+			</p>
+		</div>
+	</div>
+	
+</div>

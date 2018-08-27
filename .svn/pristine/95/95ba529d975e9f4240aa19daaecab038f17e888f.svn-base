@@ -1,0 +1,48 @@
+.reportForm {
+	border: 1px solid gray;
+	padding: 1%;
+	padding-bottom: 4%;
+	width: 95%;
+	margin-left: 2%;
+    margin-top: 2%;
+    box-shadow: 1px 1px 1px 1px #aba4a4;
+}
+
+.textStyle {
+	text-align: center !important;
+	font-family: serif !important;
+}
+
+.grideClass {
+	margin-left: 10%;
+	display: grid;
+	grid-template-columns: 35% 9% 35%;
+	grid-column-gap: 50px;
+	text-align: center;
+}
+
+.orderByFields {
+	float: right;
+}
+
+.detailBox {
+	border: 1px solid gray;
+}
+
+.orderByEle {
+	padding: 0px;
+	/* margin: 0px; */
+	width: 60%;
+}
+ .headerDiv{
+     border: 1px solid black;
+    padding-bottom: 18px;
+    height: 53px;
+    margin-left: -1.2%;
+    margin-right: -1.1%
+ }
+ .headerBackground{
+	color:red !important;	
+   background-color: #eeeeee;
+    height: 50px;
+}

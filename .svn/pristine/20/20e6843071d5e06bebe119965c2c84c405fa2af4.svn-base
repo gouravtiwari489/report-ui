@@ -1,0 +1,30 @@
+import { Injectable } from '@angular/core';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { HttpClient } from '../OAuth2/httpClient';
+import { AppConstants } from '../app.constants';
+import { Http, Response, ResponseContentType, RequestOptions, Headers } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+
+@Injectable()
+export class ReportService {
+        
+  @BlockUI() blockUI: NgBlockUI;
+  constructor(private http: HttpClient, private _http: Http) {
+
+  }
+  private appData = AppConstants;
+  
+  getColumns(): Observable<string[]>{
+      return this.http.get("http://localhost:9080/report/tableName?reportArea=TIMESHEET")
+        .map((response: Response) => response)
+        .catch(this.handleError);
+    }
+  private handleError(error: Response) {
+      console.log(error);
+      if(error.status === 0){
+        return Observable.throw('Problem with server Please contact Administrator');
+      }else{
+        return Observable.throw(error.json().message || 'Please contact Administrator');
+      }
+    }
+}

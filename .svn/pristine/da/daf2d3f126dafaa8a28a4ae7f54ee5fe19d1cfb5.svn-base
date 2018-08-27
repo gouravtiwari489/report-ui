@@ -1,0 +1,20 @@
+export class AppConstants {
+  public static appUrl = 'http://localhost:9080/report/';
+ 
+  public static messageTimerName = 'messageTimerName';
+  public static messageAutoHideSec = 5;
+  public static successMessageType = 'success';
+  public static errorMessageType = 'error';
+  public static warningMessageType = 'warning';
+  public static errorResponseCheck = 'Error!';
+  public static warningResponseCheck = 'Warning!';
+  public static defaultErrorMessage = 'Please contact Administrator';
+  public static invalidCredentialsErrorMessage = 'Invalid Credentials';
+  public static authenticationProblemErrorMessage = 'Problem while authentication Please contact Administrator';
+  public static createFilterSucessMessage = 'Filter created sucessfully.';
+  public static logoutErrorMessage = 'Problem while logout';
+  public static serverErrorMessage = 'Problem with server Please contact Administrator';
+  public static dummyRequestErrorMessage = 'error';
+  public static emptyString = '';
+  
+}

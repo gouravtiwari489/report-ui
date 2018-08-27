@@ -1,0 +1,8 @@
+/* @import url("https://fonts.googleapis.com/css?family=Lato:400,700,400italic");
+@import "../node_modules/materialize-css/dist/css/materialize.css";
+@import '~https://fonts.googleapis.com/icon?family=Material+Icons';
+@import "~nouislider/distribute/nouislider.min.css"; */
+@import "./assets/css/style.default.css";
+@import "./assets/css/grasp_mobile_progress_circle-1.0.0.min.css";
+@import url("http://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+@import "./assets/css/fontastic.css";

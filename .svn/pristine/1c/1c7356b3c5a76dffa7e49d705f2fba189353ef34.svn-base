@@ -1,0 +1,316 @@
+import {Component, OnInit, Input, ElementRef} from '@angular/core';
+import {UserService} from '../user.service';
+import {DashboardService} from './dashboard.service';
+import {Preview} from './Preview';
+import {Column} from './Column';
+import {OauthService} from '../OAuth2/oauth.service';
+import {HttpClient} from '../OAuth2/httpClient';
+import {Report} from '../report/Report';
+import {Router, ActivatedRoute, NavigationExtras} from '@angular/router';
+import {saveAs} from 'file-saver';
+import {BlockUI, NgBlockUI} from 'ng-block-ui';
+import {Idle, DEFAULT_INTERRUPTSOURCES} from '@ng-idle/core';
+import {Keepalive} from '@ng-idle/keepalive';
+import {ViewReportService} from '../report/view-report/viewReportService';
+import { AppConstants } from '../app.constants';
+import { SimpleTimer } from 'ng2-simple-timer';
+
+@Component({
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css'],
+  providers: [DashboardService, OauthService, HttpClient, ViewReportService]
+})
+export class DashboardComponent implements OnInit {
+
+  domain = "select";
+  downloadType = "select"
+  errorMessage: string = '';
+  successMessage: string = '';
+  warningMessage: string;
+  dependencyToggle: string;
+  messageTimerId: string;
+  skipTimerFirstCall: boolean;
+  username: string;
+  showHideButtonText: string;
+  rowCount: string;
+  inputList: any;
+  itemCount = 0;
+  mappedList;
+  arrayOfInputClassesKeys;
+  arrayOfMappedClassesKeys;
+  tableKeysToDaspaly;
+  inputTables;
+  mapedTableKeys;
+  mapedTable;
+  @BlockUI() blockUI: NgBlockUI;
+  mappedTables = {};
+  columns = [];
+  tables = [];
+  checkedColumnList = [];
+  reportsResponse = [];
+  showSelected: boolean;
+  isCreatingReport: boolean;
+  reportArea: string;
+  public reportView = new Report();
+  domains = [{value: 'HRMS', desc: 'HRMS', disabled: false},
+  {value: 'CRM', desc: 'CRM', disabled: true},
+  {value: 'SupplyChain', desc: 'Supply Chain', disabled: false},
+  {value: 'Manufacturing', desc: 'Manufacturing', disabled: true},
+  {value: 'Purchase', desc: 'Purchase', disabled: true},
+  {value: 'Other', desc: 'Other', disabled: true}];
+
+  reports = [{value: 'Timesheet', desc: 'Timesheet', disabled: false},
+  {value: 'Expenses', desc: 'Expenses', disabled: false},
+  {value: 'Invoices', desc: 'Invoices', disabled: false},
+  {value: 'Leaves', desc: 'Leaves', disabled: true},
+  {value: 'Employee', desc: 'Employee', disabled: true},
+  {value: 'PAndL', desc: 'PAndL', disabled: true}];
+
+
+
+  dataTypes = ["int", "String", "number", "date"];
+  fileTypes = [{value: 'csv', desc: 'CSV (Comma delimited)', disabled: false},
+  {value: 'xlsx', desc: 'Microsoft Excel Workbook', disabled: false},
+  {value: 'xml', desc: 'XML (eXtensible Markup Language)', disabled: true},
+  {value: 'sql', desc: 'SQL (Structured Query Language)', disabled: true},
+  {value: 'json', desc: 'JSON (JavaScript Object Notation)', disabled: false}];
+
+  previewData = new Preview().data;
+  previewTableList;
+  idleState;
+  timedOut = false;
+  lastPing?: Date = null;
+  imageSrc = "https://images3.alphacoders.com/853/85305.jpg";
+  itemResource: any;
+  reportName: string  ="";
+  constructor(private router: Router, private dashboardService: DashboardService,
+    private elem: ElementRef, private oauth: OauthService, private keepalive: Keepalive,
+    private idle: Idle, private activatedRoute: ActivatedRoute, private viewReportService: ViewReportService,  private st: SimpleTimer) {
+    var user = oauth.getLoggedUser();
+    this.username = user.username;
+    this.idle.setIdle(30000);
+    this.idle.setTimeout(10);
+    this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+
+    this.idle.onIdleEnd.subscribe(() => this.idleState = '');
+    this.idle.onTimeout.subscribe(() => {
+      this.idleState = 'Timed out!';
+      this.timedOut = true;
+      this.logout();
+    });
+    this.idle.onIdleStart.subscribe(() => this.idleState = 'You\'ve gone idle!');
+    idle.onTimeoutWarning.subscribe((countdown) => this.idleState = 'You will time out in ' + countdown + ' seconds! Click anywhere to continue...');;
+    this.keepalive.interval(300);
+
+    this.keepalive.onPing.subscribe(() => this.lastPing = new Date());
+    this.reset();
+  }
+
+  reset() {
+    this.idle.watch();
+    this.timedOut = false;
+  }
+
+  toggleButtonText() {
+    if (this.showHideButtonText === "Show Mappings") {
+      this.showHideButtonText = "Hide Mappings";
+    } else {
+      this.showHideButtonText = "Show Mappings";
+    }
+  }
+
+  tableClick(val) {
+    this.inputTables = this.inputList[val];
+    this.tableKeysToDaspaly = this.inputList[val].KEYS;
+    if (this.mappedTables[val]) {
+      this.mapedTable = this.mappedTables[val];
+      this.mapedTableKeys = this.mappedTables[val].KEYS;
+    }
+  }
+
+  generateData() {
+    this.previewTableList = Object.keys(this.previewData);
+    for (var i = 0; i < this.previewTableList.length; i++) {
+      for (var j = 0; j < this.previewData[this.previewTableList[i]].length; j++) {
+        delete this.previewData[this.previewTableList[i]][j].KEYS;
+        this.previewData[this.previewTableList[i]][j].KEYS = Object.keys(this.previewData[this.previewTableList[i]][j]);
+      }
+    }
+  }
+
+  logout() {
+    let formData = new FormData();
+    formData.append('userName', this.username);
+    this.dashboardService.dummyRequest().subscribe(response => {
+      this.oauth.logout(formData).subscribe(response => {
+        if (response.status === 200) {
+          window.localStorage.removeItem("token");
+          this.router.navigate(['/']);
+        }
+      },
+      Error => {
+          this.setMessage(Error, AppConstants.errorMessageType);
+          this.blockUI.stop();
+          window.scrollTo(0, 0);
+      });
+    },
+    Error => {
+        this.setMessage(Error, AppConstants.errorMessageType);
+        this.blockUI.stop();
+        window.scrollTo(0, 0);
+    });
+  }
+
+
+  getColumns(tableName) {
+    this.dashboardService.getColumns(tableName).subscribe(response => {
+      this.columns = response;
+    },
+    Error => {
+        this.setMessage(Error, AppConstants.errorMessageType);
+        this.blockUI.stop();
+        window.scrollTo(0, 0);
+    });
+  }
+
+  getReports(reportName) {
+    this.dashboardService.getReports(reportName).subscribe(response => {
+      this.reportsResponse = response;
+    },
+    Error => {
+    	this.setMessage(Error, AppConstants.errorMessageType);
+    	this.blockUI.stop();
+    	window.scrollTo(0, 0);
+    });
+  }
+
+  ShowButton() {
+    this.showSelected = true;
+  }
+
+  gotoCreateNewReport() {
+    this.router.navigate(['dashboard/'+this.reportArea+'/createNewReport']);
+  }
+
+  ngOnInit(): void {
+    this.setMessage("", "sucess");
+    this.dependencyToggle = 'true';
+    this.showHideButtonText = "Show Mappings";
+    this.inputList = [];
+
+    this.showSelected = false;
+    this.activatedRoute.params.subscribe(params => {
+      if (params.name != undefined) {
+          this.reportArea= params.name;
+        this.getReports(params.name);
+        this.ShowButton();
+      }
+    });
+    
+    this.st.newTimer(AppConstants.messageTimerName, AppConstants.messageAutoHideSec );
+    this.skipTimerFirstCall = true;
+  }
+
+  runReport(report) {
+    this.reportView = report;
+    this.reportView.groupByList = [];
+    this.reportView.orderByList = [];
+    this.reportView.filters = [];
+    this.isCreatingReport = false;
+//    console.log(JSON.stringify(this.reportView));
+    if(this.reportView.reportName === "Utilisation Report"){
+      this.viewReportService.getCustomReport('generateUtilisationReport').subscribe(response =>{
+        // console.log(response);
+         if (response.status = 200) {
+            localStorage.setItem("report", JSON.stringify(this.reportView));
+            localStorage.setItem("viewResponse", response._body);
+            this.router.navigate(['dashboard/'+this.reportArea+'/viewReport']);
+        }
+      },Error => {
+      	this.setMessage(Error, AppConstants.errorMessageType);
+      	this.blockUI.stop();
+      	window.scrollTo(0, 0);
+      });
+    }else if(this.reportView.reportName === "Resources assignment"){
+       this.viewReportService.getCustomReport('generateResourceAssignmentReport').subscribe(response =>{
+        // console.log(response);
+         if (response.status = 200) {
+            localStorage.setItem("report", JSON.stringify(this.reportView));
+            localStorage.setItem("viewResponse", response._body);
+            this.router.navigate(['dashboard/'+this.reportArea+'/viewReport']);
+        }
+      },Error => {
+      	this.setMessage(Error, AppConstants.errorMessageType);
+      	this.blockUI.stop();
+      	window.scrollTo(0, 0);
+      });
+    }else if(this.reportView.reportName === "Resources Distribution"){
+      this.viewReportService.getCustomReport('generateResourceDistributionReport').subscribe(response =>{
+        // console.log(response);
+         if (response.status = 200) {
+            localStorage.setItem("report", JSON.stringify(this.reportView));
+            localStorage.setItem("viewResponse", response._body);
+            this.router.navigate(['dashboard/'+this.reportArea+'/viewReport']);
+        }
+      },
+   Error => {
+      	this.setMessage(Error, AppConstants.errorMessageType);
+      	this.blockUI.stop();
+      	window.scrollTo(0, 0);
+      });
+    }else{
+      this.viewReportService.generateReport(this.reportView, this.isCreatingReport).subscribe(response => {
+        if (response.status = 200) {
+            localStorage.setItem("report", JSON.stringify(this.reportView));
+            localStorage.setItem("viewResponse", response._body);
+            this.router.navigate(['dashboard/'+this.reportArea+'/viewReport']);
+        }
+      },
+      Error => {
+      	this.setMessage(Error, AppConstants.errorMessageType);
+      	this.blockUI.stop();
+      	window.scrollTo(0, 0);
+      });
+    }
+    }
+    deleteReport(reportName) {
+    	this.dashboardService.deleteReport(reportName, this.reportArea).subscribe(response => {
+    		this.reportsResponse = response;
+    		this.setMessage(AppConstants.reportDeleteSuccessmsg, AppConstants.successMessageType);
+    	},
+	    Error => {
+	    	this.setMessage(AppConstants.reportDeleteFailuremsg, AppConstants.errorMessageType);
+	    	this.blockUI.stop();
+	    	window.scrollTo(0, 0);
+	    });
+    	
+    }
+ 
+    setMessage(message, type) {
+        this.errorMessage = AppConstants.emptyString;
+        this.successMessage = AppConstants.emptyString;
+        if (type === AppConstants.errorMessageType) {
+            this.errorMessage = message;
+        } else if (type === AppConstants.successMessageType ) {
+            this.successMessage = message;
+        }
+
+        this.st.unsubscribe(this.messageTimerId);
+        this.messageTimerId = this.st.subscribe(AppConstants.messageTimerName, () => this.closeMessageBox( type ) );
+        this.skipTimerFirstCall = true;
+    }
+    
+    closeMessageBox(message) {
+        if (this.skipTimerFirstCall) {
+            this.skipTimerFirstCall = false;
+        } else {
+            if (message === AppConstants.successMessageType) {
+                this.successMessage = AppConstants.emptyString;
+            } else if (message === AppConstants.errorMessageType) {
+                this.errorMessage = AppConstants.emptyString;
+            }
+            this.st.unsubscribe(this.messageTimerId);
+        }
+    }
+}

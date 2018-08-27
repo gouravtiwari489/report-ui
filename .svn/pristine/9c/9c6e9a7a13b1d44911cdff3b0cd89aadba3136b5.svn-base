@@ -1,0 +1,11 @@
+import { Project } from './Project';
+
+export class Filter {
+    filterName: string;
+    fromDate: Date;
+    toDate: Date;
+    fromApprovedDate: Date;
+    toApprovedDate: Date;
+    isProjectInclude: boolean;
+    projects: Array<Project>;
+}

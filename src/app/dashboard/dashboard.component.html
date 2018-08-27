@@ -1,0 +1,102 @@
+<app-navigator></app-navigator>
+<div class="page forms-page">
+	<app-header></app-header>
+	<section *ngIf="showSelected">
+		<div class="card">
+			<div class="card-body">
+				<div class="row notificationRow">
+					<div class="col-sm-2"></div>
+					<div class="col-sm-8 notificationTextDiv" id="message" [hidden]="successMessage === ''">
+						<div class="alert alert-success alert-dismissible notificationText" id="successMessage">
+							<a class="close" data-dismiss="" aria-label="close"	(click)="closeMessageBox('success')">&times;</a>
+							{{successMessage}}
+						</div>
+					</div>
+					<div class="col-sm-8 notificationTextDiv" id="message" [hidden]="errorMessage === ''">
+						<div class="alert alert-danger alert-dismissible notificationText">
+							<a class="close" data-dismiss="" aria-label="close"	(click)="closeMessageBox('error')">&times;</a>
+							 {{errorMessage}}
+						</div>
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+				<div class="row dashboardBox">
+					<div class="col-sm-3"><span class="reportHeading">{{reportName}} Reports</span></div>
+					<div class="col-sm-7"></div>
+					<div class="col-sm-2 createReportButton">
+						<a class="btn btn-primary" (click)="gotoCreateNewReport()">Create New Report</a>
+					</div>
+				</div>
+				<div class="row tableBox">
+					<div class="col-sm-12" style="margin: auto; margin-bottom: 50px;">
+						<table style="margin:1%" class="table table-striped table-bordered">
+							<thead>
+								<tr class="row">
+									<th class="col-sm-2">Report Name</th>
+									<th class="col-sm-2">Owner</th>
+									<th class="col-sm-2">Shared to</th>
+									<th class="col-sm-2">Created Date</th>
+									<th class="col-sm-2">Last Execution</th>
+									<th class="col-sm-2">Actions</th>
+								</tr>
+							</thead>
+							<tr class="row" *ngFor="let report of reportsResponse">
+								<td class="col-sm-2">{{report.reportName}}</td>
+								<td class="col-sm-2">{{report.owner}}</td>
+								<td class="col-sm-2">{{report.sharedTo}}</td>
+								<td class="col-sm-2">{{report.createdDate}}</td>
+								<td class="col-sm-2">{{report.lastExcecution}}</td>
+								<td class="col-sm-2"><a
+									class="btn-tiny waves-effect grey lighten-2 waves-light actionButtonStyle"
+									data-toggle="tooltip" title="Run Report"
+									(click)="runReport(report)"><i class="tiny material-icons">play_arrow</i></a>
+									<a
+									class="btn-tiny waves-effect grey lighten-2 waves-light actionButtonStyle"
+									data-toggle="tooltip" title="Share Report"><i
+										class="tiny material-icons">share</i></a> <a
+									class="btn-tiny waves-effect grey lighten-2 waves-light actionButtonStyle"
+									data-toggle="tooltip" title="Clone Report"><i
+										class="tiny material-icons">content_copy</i></a> <a
+									class="btn-tiny waves-effect grey lighten-2 waves-light actionButtonStyle"
+									data-toggle="tooltip" title="Delete Report"(click)="deleteReport(report.reportName)"><i
+										class="tiny material-icons">close</i></a></td>
+							</tr>
+						</table> 
+						 	<!-- <data-table id="persons-grid" [items]="reportsResponse"
+			[itemCount]="itemCount" (reload)="reloadItems($event)"
+			[rowTooltip]="rowTooltip"
+			[limit]="6">
+		<data-table-column [property]="'reportName'" [header]="'Report Name'"
+			[sortable]="true" [resizable]="true"> </data-table-column> <data-table-column
+			property="owner" header="owner" width="150px" [sortable]="true"
+			[resizable]="true"> </data-table-column> <data-table-column
+			property="sharedTo" header="Shared To" width="150px"
+			[sortable]="true" [resizable]="true"> </data-table-column> <data-table-column
+			[header]="'Action'"> [property]="'Action'" <template
+			#dataTableCell let-item="item"> <a
+			class="btn-tiny waves-effect grey lighten-2 waves-light actionButtonStyle"
+			data-toggle="tooltip" title="Run Report" (click)="runReport(item)"><i
+			class="tiny material-icons">play_arrow</i></a> <a
+			class="btn-tiny waves-effect grey lighten-2 waves-light actionButtonStyle"
+			data-toggle="tooltip" title="Share Report"><i
+			class="tiny material-icons">share</i></a> <a
+			class="btn-tiny waves-effect grey lighten-2 waves-light actionButtonStyle"
+			data-toggle="tooltip" title="Clone Report"><i
+			class="tiny material-icons">content_copy</i></a> <a
+			class="btn-tiny waves-effect grey lighten-2 waves-light actionButtonStyle"
+			data-toggle="tooltip" title="Delete Report"><i
+			class="tiny material-icons">close</i></a></template> </data-table-column> <data-table-column
+			[property]="'createdDate'" [header]="'Created Date'"
+			[sortable]="true" [resizable]="true"> </data-table-column> <data-table-column
+			[property]="'lastExcecution'" [header]="'Last Excecution'"
+			[sortable]="true" [resizable]="true"> </data-table-column> </data-table> -->
+					</div>
+				</div>
+			</div>
+		</div>
+
+	
+	</section>
+	<app-footer></app-footer>
+</div>
+

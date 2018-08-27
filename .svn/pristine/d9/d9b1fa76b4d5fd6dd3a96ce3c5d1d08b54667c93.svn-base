@@ -1,0 +1,319 @@
+import { HttpClient } from '../../OAuth2/httpClient';
+import { DashboardComponent } from '../../dashboard/dashboard.component';
+import { DashboardService } from '../../dashboard/dashboard.service';
+import { OauthService } from '../../OAuth2/oauth.service';
+import { Report } from '../Report';
+import { ViewReportService } from './viewReportService';
+import { Component, OnInit, Input } from '@angular/core';
+import { ReportService } from '../report.service';
+import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
+import { Filter, Field } from '../Filter';
+import { Project } from '../Project';
+import { saveAs } from 'file-saver';
+import { AppConstants } from '../../app.constants';
+import { SimpleTimer } from 'ng2-simple-timer';
+import * as _ from 'underscore';
+
+@Component( {
+    selector: 'app-view-report',
+    templateUrl: './view-report.component.html',
+    styleUrls: ['./view-report.component.css'],
+    providers: [ViewReportService, DashboardService, OauthService, HttpClient, ReportService]
+} )
+export class ViewReportComponent implements OnInit {
+
+    userName: string;
+    reportsViewResponse = [];
+    val: string;
+    reportData = [];
+    reports = [];
+    viewResponseData = [];
+    listOfColumns: Array<any>=[]
+    isCreatingReport: boolean;
+    display = 'none';
+    isprojectInclude = true;
+    fromDate: Date;
+    toDate: Date;
+    fromApprovedDate: Date;
+    toApprovedDate: Date;
+    maxDate = new Date();
+    filter = new Filter();
+    projects = [];
+    allFilters = [];
+    messageTimerId: string;
+    skipTimerFirstCall: boolean;
+    errorMessage: string = '';
+    successMessage: string = '';
+    reportView : any;
+    report = new Report();
+    reportCopy = new Report();
+    field = new Field();
+    values=[]
+    valueLists = [this.values];
+    obj= {value: '', disabled: false }
+    generatedReportsColumn = [this.obj];
+    operationList=[[]];
+    tables = {};
+    arraysColumns = [];
+    obj2: {[k: string]: any} = {};
+    currentFilterName: string;
+    filterNameList : Array<string>=[];
+    defaultFilter = new Filter();
+    duplicateFilterName : boolean = false;
+    constructor(private viewService: ViewReportService, private reportService: ReportService,
+        private route: ActivatedRoute, private st: SimpleTimer ) {
+    }
+
+    ngOnInit() {
+       
+        let reportObject = localStorage.getItem("report");
+        let viewResponseObject = localStorage.getItem("viewResponse");
+        this.report = JSON.parse(reportObject);
+        this.modifyByteArray(viewResponseObject);
+        
+        this.viewService.getAllFiltersByReportName(this.report.reportName).subscribe(response => {
+            this.allFilters = response;    
+            this.filter = this.allFilters[0];
+            this.currentFilterName = this.allFilters[0].filterName;
+                
+        });
+        
+        this.reportService.getColumns().subscribe(response => {
+            if (response) {
+              this.tables = response;
+            }
+            this.arraysColumns = _.union(_.values(this.tables));
+          
+            for (let val of this.arraysColumns) {
+                this.listOfColumns = _.union(this.listOfColumns, val)
+            }
+ //           console.log(JSON.stringify(this.listOfColumns));
+            this.st.newTimer(AppConstants.messageTimerName, AppConstants.messageAutoHideSec );
+            this.skipTimerFirstCall = true;
+        });
+        
+        this.viewService.getFilterNames(this.report.reportName).subscribe(response => {
+        	this.filterNameList = response;
+        })
+    }
+    
+    validateFilterName(){
+  	  let index=_.indexOf(this.filterNameList, this.filter.filterName);
+  	  if(index != -1){
+  		  this.duplicateFilterName= true;
+  	  }else{
+  		  this.duplicateFilterName= false;
+  	  }
+    }
+
+    modifyByteArray(reportsViewResponse) {
+        this.reportsViewResponse = reportsViewResponse;
+        this.val = '';
+        this.reportData = [];
+        this.reports= [];
+        for (let entry of this.reportsViewResponse) {
+            if (entry.match(/[^\r\n]+/g) !== null) {
+                if (entry != ',') {
+                    entry = entry.toString();
+                    this.val = this.val + entry;
+                } else {
+                    this.reportData.push(this.val);
+                    this.val = '';
+                }
+            } else {
+                this.reportData.push(this.val);
+                this.reports.push(_.compact(this.reportData));
+                this.reportData = [];
+                this.val = '';
+            }
+        }
+        this.reports[0].forEach(data => {
+            this.obj={value: '', disabled: false};
+            this.obj.value = data;
+            this.obj.disabled = false;
+            this.generatedReportsColumn.push(this.obj);
+        });
+        this.generatedReportsColumn = _.rest(this.generatedReportsColumn);
+    }
+    
+    downloadPdfFile(){
+    var format = 'pdf';
+    this.viewService.downloadFile(format).subscribe(response =>  {
+	  let file = new Blob([response], { type: 'application/pdf' });            
+	  var fileURL = URL.createObjectURL(file);
+	  window.open(fileURL);
+      saveAs(response, AppConstants.fileNameToSave + new Date().getTime() + AppConstants.DefaultFileFormatToSave);
+      this.setMessage(AppConstants.fileDownloadSucessMessage, AppConstants.successMessageType);
+    }, error => {
+        this.setMessage(AppConstants.fileDownloadErrorMessage, AppConstants.errorMessageType);
+    });
+    }
+    
+    downloadXlsFile(){
+        var format = 'xlsx';
+        this.viewService.downloadExcelFile(format).subscribe(response =>  {
+    	  let file = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });            
+    	  var fileURL = URL.createObjectURL(file);
+    	  window.open(fileURL);
+          saveAs(response, AppConstants.fileNameToSave + new Date().getTime() + '.xlsx');
+          this.setMessage(AppConstants.fileDownloadSucessMessage, AppConstants.successMessageType);
+        }, error => {
+            this.setMessage(AppConstants.fileDownloadErrorMessage, AppConstants.errorMessageType);
+        });
+        }
+  
+    downloadCsvFile(val){
+         const contentType = AppConstants.fileDownloadContentType;
+         const blob = new Blob([this.reportsViewResponse], { type: contentType });
+        saveAs(blob, AppConstants.fileNameToSave + new Date().getTime() + ".csv");
+        this.setMessage(AppConstants.fileDownloadSucessMessage, AppConstants.successMessageType);
+        
+      }
+    
+    getOperations(columnDisplayName, i){
+       this.values = [];
+       this.valueLists[i] = []; 
+       this.obj = this.listOfColumns.find( column => column.columnDisplayName === columnDisplayName);
+       this.reportService.getValues(this.obj).subscribe(response => {
+//        console.log(JSON.stringify(response));
+        if (response.status==200) {
+            this.values = JSON.parse(response._body);
+            this.valueLists[i] = this.values;
+        }
+     },
+        Error => {
+            this.setMessage(Error, AppConstants.errorMessageType);
+        }
+    );
+        
+        this.viewService.getOperations(columnDisplayName).subscribe(response => {
+            if (response) {
+                this.operationList[i] = [];
+                this.operationList[i] = response;
+            }
+         },Error => {
+                this.setMessage(Error, AppConstants.errorMessageType);
+         });
+        
+        this.generatedReportsColumn.forEach(column =>{
+            if((_.findLastIndex(this.filter.fields, {columnName:column.value}))>-1)
+                column.disabled = true;
+            else
+                column.disabled = false;
+        });
+    }
+    
+    newFilter(){
+        this.defaultFilter = this.filter;
+        this.filter = new Filter();
+        this.generatedReportsColumn.forEach(column =>{
+              column.disabled = false;  
+        });
+        this.operationList = [];
+        this.values = [];
+        this.valueLists = [];
+   }
+    
+    addColumnList(){
+        this.filter.fields.push(new Field());
+    }
+    
+    removeColumnList(index){
+        this.generatedReportsColumn.forEach(column =>{
+            if(column.value == this.filter.fields[index].columnName){
+              column.disabled = false;  
+            }
+        });
+        this.filter.fields.splice(index, 1);
+    }
+    
+    createFilter(isSaveOnly) {
+        
+        this.filter.reportName = this.report.reportName;
+        this.filter.fields.forEach(field =>{
+            field.filterName = this.filter.filterName;
+            this.obj2 = this.listOfColumns.find( column => column.columnDisplayName === field.columnDisplayName );
+            field.columnName = this.obj2.columnName;
+        });
+        
+        if(isSaveOnly){
+            this.reportCopy = new Report();
+            this.reportCopy.filters = [];
+            this.reportCopy.filters.push(this.filter);
+            
+            this.viewService.createNewFilter(this.reportCopy).subscribe(response => {
+                if (response.status = 200) {
+                }
+                this.setMessage(AppConstants.createFilterSucessMessage, AppConstants.successMessageType);
+            },Error => {
+                this.setMessage(Error, AppConstants.errorMessageType);
+            });
+        }
+        else{
+            this.reportCopy = _.clone(this.report);
+            this.reportCopy.groupByList = [];
+            this.reportCopy.orderByList = [];
+            this.reportCopy.filters = [];
+            this.reportCopy.filters.push(this.filter);
+//            console.log(" Save & Run =="+JSON.stringify(this.reportCopy));
+            this.viewService.generateReport(this.reportCopy, this.isCreatingReport).subscribe(response => {
+              if (response.status = 200) {
+                  this.viewResponseData = response._body;
+                  this.modifyByteArray(response._body);
+              }this.setMessage(AppConstants.createFilterSucessMessage, AppConstants.successMessageType);
+                
+               this.viewService.getAllFiltersByReportName(this.reportCopy.reportName).subscribe(response => {
+                    this.allFilters = response;
+                    this.allFilters.forEach(filterObject =>{
+                        if(filterObject.filterName ==this.filter.filterName){
+                            this.filter = filterObject;
+                            this.currentFilterName = filterObject.filterName;
+                        }
+                    });
+                    
+               });
+                
+            },
+                Error => {
+                    this.setMessage(Error, AppConstants.errorMessageType);
+                }
+            );
+        }
+    }
+    applyFilter(filterObj){
+        filterObj.fields = [];
+        this.filter = filterObj;
+        this.createFilter(false);
+    }
+    
+    onModalClose(){
+        this.filter = this.defaultFilter; 
+    }
+    
+    setMessage(message, type) {
+        this.errorMessage = AppConstants.emptyString;
+        this.successMessage = AppConstants.emptyString;
+        if (type === AppConstants.errorMessageType) {
+            this.errorMessage = message;
+        } else if (type === AppConstants.successMessageType ) {
+            this.successMessage = message;
+        }
+
+        this.st.unsubscribe(this.messageTimerId);
+        this.messageTimerId = this.st.subscribe(AppConstants.messageTimerName, () => this.closeMessageBox( type ) );
+        this.skipTimerFirstCall = true;
+    }
+    closeMessageBox(message) {
+        if (this.skipTimerFirstCall) {
+            this.skipTimerFirstCall = false;
+        } else {
+            if (message === AppConstants.successMessageType) {
+                this.successMessage = AppConstants.emptyString;
+            } else if (message === AppConstants.errorMessageType) {
+                this.errorMessage = AppConstants.emptyString;
+            }
+            this.st.unsubscribe(this.messageTimerId);
+        }
+    }
+
+}

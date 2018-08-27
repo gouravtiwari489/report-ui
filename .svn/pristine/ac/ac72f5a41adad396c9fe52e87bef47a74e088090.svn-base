@@ -1,0 +1,114 @@
+.input-pannel {
+	background-color: lightgray;
+	margin-bottom: 20px;
+	border-radius: 10px;
+}
+
+@import
+	url("https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
+	;
+
+.panel-title>a:before {
+	float: left !important;
+	font-family: FontAwesome;
+	content: "\f068";
+	padding-right: 5px;
+}
+
+.panel-title>a.collapsed:before {
+	float: left !important;
+	content: "\f067";
+}
+
+.panel-title>a:hover, .panel-title>a:active, .panel-title>a:focus {
+	text-decoration: none;
+}
+
+.table_heading {
+	margin-left: 2%;
+	font-family: serif;
+	font-size: 14px;
+	color: #337ab7;
+	text-transform: uppercase;
+}
+
+.row.content {
+	height: 1500px
+}
+
+/* Set gray background color and 100% height */
+.scrolabble{
+	height: 400px !important;
+   	overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+	.sidenav {
+		height: auto;
+		padding: 15px;
+	}
+	.row.content {
+		height: auto;
+	}
+}
+.tr{
+	padding: 0px;
+    margin: 0px 0px 0px;
+    font-size: 12px;
+}
+.tableData{
+	margin-top: 2%;
+	margin-bottom: 1%;
+	font-size: 12px;
+}
+
+.userTitleFrame{
+	text-align: right !important; 
+	margin-right: 4% !important;
+}
+.userTitle{
+	font-size:25px !important; 
+	font-weight:500 !important;
+}
+
+.logoutStyle{
+	font-size: 22px !important; 
+	cursor:pointer;
+}
+.reportSearchFrame{
+	background-color: #eeeeee !important;
+}
+
+.selectTableTitle{
+	font-size: large !important; 
+	font-weight: 200 !important; 
+	color: black !important; 
+	padding-top: 5px !important;
+}
+
+.createReportButton{
+	margin-left: -1% !important;
+	float:right;
+}
+.actionButtonStyle{
+	cursor:pointer !important; 
+	padding-top: 4px !important;
+}
+
+.layout{
+	width:80%;
+}
+.mainRowFrame{
+	padding-left: 43px !important; 
+	margin-bottom: 0px !important;
+}
+.dashboardBox{
+	padding-top: 1% !important;
+	padding-bottom: 1% !important; 
+	padding-right: 6% !important;
+}
+.tableBox{
+	padding-right: 4% !important;
+}

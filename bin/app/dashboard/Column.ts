@@ -1,0 +1,9 @@
+export class Column {
+  
+  columnName: string;
+  typeName: string;
+  columnSize: number;
+  checked: boolean;
+  
+  
+}

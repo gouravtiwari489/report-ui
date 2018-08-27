@@ -1,0 +1,305 @@
+<app-navigator></app-navigator>
+<div class="page forms-page">
+	<app-header></app-header>
+	<section>
+		<div class="card">
+			<div class="card-body" style="padding: 1%">
+				<div class="row" style="margin-bottom: 5px; margin-top: 5px;">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-8" id="message"
+							[hidden]="successMessage === ''" style="text-align: center;">
+							<div class="alert alert-success alert-dismissible"
+								id="successMessage"
+								style="padding-top: 6px; padding-bottom: 6px; margin-bottom: 0px">
+								<a class="close" data-dismiss="" aria-label="close"
+									(click)="closeMessageBox('success')">&times;</a>
+								{{successMessage}}
+							</div>
+						</div>
+						<div class="col-sm-8" [hidden]="errorMessage === ''"
+							style="text-align: center;">
+							<div class="alert alert-danger alert-dismissible"
+								style="padding-top: 6px; padding-bottom: 6px; margin-bottom: 0px">
+								<a class="close" data-dismiss="" aria-label="close"
+									(click)="closeMessageBox('error')">&times;</a> {{errorMessage}}
+							</div>
+						</div>
+
+				</div>
+				<form #reportForm="ngForm" class="reportForm">
+					<p class="textStyle"
+						style="font-size: 20px; margin-top: 4px !important">Create Timesheet Report</p>
+					<hr style="margin: 0px !important">
+
+					<div *ngIf="reportDetailTab" style="margin: 2%;" class="row"
+						[style.display]="hideContent?'inherit':'none'">
+						<div class="row">
+							<div class="col-sm-1"></div>
+							<div class="col-sm-4 form-group">
+								<span
+									style="margin-bottom: 2px; margin-top: 2px; font-size: 15px;">Report
+									Name<font color="red">*</font></span>
+								<!-- <label class="textStyle" for="report_name">Report Name</label> -->
+								<input type="text" name="report_name"
+									[(ngModel)]="newReport.reportName" class="form-control" required>
+							</div>
+							<div class="col-sm-2"></div>
+							<div class="col-sm-4 form-group">
+								<span
+									style="margin-bottom: 2px; margin-top: 2px; font-size: 15px;">Report
+									Purpose</span>
+								<!-- <label class="textStyle" for="report_purpose" >Report Purpose</label> -->
+								<input type="text" name="report_purpose"
+									[(ngModel)]="newReport.purpose" class="form-control">
+							</div>
+							<div class="col-sm-1"></div>
+						</div>
+						<div class="grideClass">
+							<div name="columnList">
+								<!-- <h5>Available Columns</h5> -->
+								<span
+									style="margin-bottom: 2px; margin-top: 2px; font-size: 15px;">Select Required Fields
+									</span> <select name="colums" id="multiselect"
+									class="form-control" [(ngModel)]="availableColumns" multiple
+									style="height: 250px;">
+									<option *ngFor="let column of listOfColumns" [value]="column">{{column.columnDisplayName}}</option>
+								</select>
+							</div>
+
+							<div style="margin-top: 90%;">
+								<button type="button" id="js_right_All_1"
+									(click)="addToExcludedALL(test)"
+									class="btn waves-effect light-blue darken-4 waves-light"
+									data-toggle="tooltip" title="Import All Column"
+									style="margin-bottom: 10px !important;">
+									<i class="glyphicon glyphicon-forward"></i>
+								</button>
+								<br>
+								<button type="button" id="js_right_Selected_1"
+									(click)="addToExcludedRepeat()"
+									class="btn waves-effect light-blue darken-4 waves-light"
+									data-toggle="tooltip" title="Import Selected Column"
+									style="margin-bottom: 10px !important;">
+									<i class="glyphicon glyphicon-chevron-right"></i>
+								</button>
+								<br>
+								<button type="button" id="js_left_Selected_1"
+									(click)="removeFromExcludedRepeat()"
+									class="btn waves-effect light-blue darken-4 waves-light"
+									data-toggle="tooltip" title="Export Selected Column"
+									style="margin-bottom: 10px !important;">
+									<i class="glyphicon glyphicon-chevron-left"></i>
+								</button>
+								<br>
+								<button type="button" id="js_left_All_1"
+									(click)="removeFromExcludedALL()"
+									class="btn waves-effect light-blue darken-4 waves-light"
+									data-toggle="tooltip" title="Export All Column">
+									<i class="glyphicon glyphicon-backward"></i>
+								</button>
+
+							</div>
+							<div name="columnList">
+								<!-- <h5>Selected Columns</h5> -->
+								<span
+									style="margin-bottom: 2px; margin-top: 2px; font-size: 15px;">Selected
+									Fields <font color="red">*</font></span> <select name="colums" id="multiselect"
+									class="form-control" [(ngModel)]="selectedColumn" multiple
+									style="height: 250px;" required>
+									<option *ngFor="let column of selectedColumns" [value]="column">{{column.columnDisplayName}}</option>
+								</select>
+							</div>
+							<div class="moveButtons">
+								<div>
+									<button style="width: 30px !important" type="button"
+										class="btn btn-default btn-lg" (click)="moveUp()"
+										[disabled]="selectedColumn.length != 1">
+										<span class="glyphicon glyphicon-arrow-up"></span>
+									</button>
+								</div>
+								<br>
+								<div>
+									<button style="width: 30px !important" type="button"
+										class="btn btn-default btn-md" (click)="moveDown()"
+										[disabled]="selectedColumn.length != 1">
+										<span class="glyphicon glyphicon-arrow-down"></span>
+									</button>
+								</div>
+							</div>
+						</div>
+						<br>
+					</div>
+					<div class="row" style="margin-bottom: 2%;">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-2 imgIcon">
+							<img src="assets\images\details_icon.png"
+								(click)="viewReportType('detailReport')">
+							<div>
+								<label style="font-size: 15px;">Detail Report</label>
+							</div>
+						</div>
+						<div id="icon" class="col-sm-2 imgIcon">
+								<img src="assets\images\summary_icon.png"
+								(click)="viewReportType('summaryReport')">
+							<div>
+								<label style="font-size: 15px;">Summary Report</label>
+							</div>
+						</div>
+						<div class="col-sm-3 imgIcon">
+							<img  src="assets\images\summary-graph_icon.png"
+								(click)="viewReportType('summaryWithGraph')">
+							<div>
+								<label style="font-size: 15px;">Summary with Graph</label>
+							</div>
+						</div>
+						<div class="col-sm-2 imgIcon">
+							<img src="assets\images\crosstab_icon.png"
+								(click)="viewReportType('crosstabReport')">
+							<div>
+								<label style="font-size: 15px;">Crosstab Report</label>
+							</div>
+						</div>
+						<div class="col-sm-1"></div>
+					</div>
+					<div class="row">
+						<p class="textStyle" style="font-size: 18px;">Filter</p>
+	        			<div class="row" style="padding-left:13%; padding-right:11%">
+							<table class="bordered striped">
+								<thead>
+									<tr class="row">
+										<th class="col-sm-4" style="text-align: center;">Column Name<font color="red">*</font></th>
+										<th class="col-sm-2" style="text-align: center;">Operations<font color="red">*</font></th>
+										<th class="col-sm-5" style="text-align: center;">Column Values<font color="red">*</font></th>
+										<th class="col-sm-1" style="text-align: center;">Add/Remove</th>
+									</tr>
+								</thead>
+								<tr class="row" *ngFor="let field of filter.fields; let i = index; let last = last">
+									
+									<td class="col-sm-4">
+										<select class="form-control" style="width:100%" name="filterColumnName_{{i}}" [(ngModel)]="field.columnDisplayName"
+											(change)="getOperations( field.columnDisplayName, i)" required>
+										    <option value="" disabled selected>Select Column</option>
+										    <option *ngFor="let column of listOfColumnsCopy;" [ngValue]="column.columnDisplayName" [disabled]="column.disabled">{{column.columnDisplayName}}</option>
+										</select>
+									</td>
+									<td class="col-sm-3">
+										<select class="form-control" style="width:100%" name="filterColumnOperation_{{i}}" [(ngModel)]="field.operation" required>
+										    <option value="" disabled selected>Select Operation</option>
+										    <option *ngFor="let operation of operationList[i];" [ngValue]="operation">{{operation}}</option>
+										</select>
+									</td>
+									<td class="col-sm-4">
+										<select class="form-control" multiple style="width:100%" name="filterColumnValue_{{i}}" [(ngModel)]="field.columnValues" required>
+										    <option value="" disabled selected>Select Column Values</option>
+										    <option *ngFor="let value of valueLists[i];" [ngValue]="value">{{value}}</option>
+										</select>
+									</td>
+									<td class="col-sm-1">
+										<span><button type="button"	class="btn btn-primary" data-toggle="tooltip" title="Remove Column"
+													(click)='removeColumnList(i)' *ngIf='filter.fields.length>1'><i class="small material-icons">remove</i>
+											</button>
+										</span>
+										<span>
+											<button type="button" class="btn btn-primary" data-toggle="tooltip" title="Add Column" 
+													(click)='addColumnList()' *ngIf="last" [disabled]="i==listOfColumnsCopy.length-1"><i class="small material-icons">add</i>
+											</button>
+										</span>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div class="row" style="margin-left: 10%; margin-top: 2%">
+						<p class="textStyle" style="font-size: 18px;">Order By</p>
+						<div class="row">
+							<div class="col-sm-3">
+								<span style="font-size: 16px;">Order By</span>
+							</div>
+							<div class="col-sm-6" id="orderByList">
+								<p class="col-sm-12"
+									*ngFor="let order of newReport.orderByList; let i=index">
+									<select class="form-control col-sm-10" name="orderByList_{{i}}"
+										[(ngModel)]="newReport.orderByList[i]" style="width: 70%">
+										<option value="" disabled>-Select Order By-</option>
+										<option *ngFor="let column of selectedColumns"
+											[disabled]="column.disable" [ngValue]="column.columnName">{{column.columnDisplayName}}</option>
+									</select> <span class="col-sm-1"><button type="button"
+											class="btn btn-primary" data-toggle="tooltip" title="Remove"
+											(click)='removeOrderByList(i)'>
+											<i class="small material-icons">remove</i>
+										</button></span> <span *ngIf="i == newReport.orderByList.length-1"
+										disabled="newReport.orderByList[i] ==''" class="col-sm-1"><button
+											type="button" class="btn btn-primary" data-toggle="tooltip"
+											title="Add More" (click)='addOrderByList(i)'>
+											<i class="small material-icons">add</i>
+										</button></span>
+								</p>
+
+							</div>
+							<div class="col-sm-3"></div>
+						</div>
+					</div>
+					<div class="row" 
+						style="margin-left: 10%; margin-top: 2%" *ngIf="showGroupBy">
+						<p class="textStyle" style="font-size: 18px;">Group By</p>
+						<div class="row">
+							<div class="col-sm-3">
+								<span style="font-size: 16px;">Group By</span>
+							</div>
+							<div class="col-sm-6" id="orderByList">
+								<div class="row">
+									<p class="col-sm-12"
+										*ngFor="let groupByList of newReport.groupByList; let i= index">
+										<span class="col-sm-6" style="padding-left: 0% !important;">
+											<select class="form-control" name="groupByList_{{i}}"
+											[(ngModel)]="groupByList.columnName">
+												<option value="" disabled selected>-Select
+													Aggregation1-</option>
+												<option *ngFor="let column of columns"
+													[value]="column.columnName" [disabled]="column.disable">{{column.columnDisplayName}}</option>
+										</select>
+										</span> <span class="col-sm-4" style="padding-left: 0% !important;">
+											<select class="form-control" name="operation{{i}}"
+											[(ngModel)]="groupByList.operation">
+												<option value="count" selected>Count</option>
+												<option value="1" disabled>Sum</option>
+												<option value="2" disabled>Average</option>
+												<option value="3" disabled>Min</option>
+												<option value="3" disabled>A</option>
+										</select>
+										</span> <span class="col-sm-1"><button type="button"
+												class="btn btn-primary" data-toggle="tooltip" title="Remove"
+												(click)='removeGroupByList(i)'>
+												<i class="small material-icons">remove</i>
+											</button></span> <span class="col-sm-1"
+											*ngIf="i == newReport.groupByList.length-1"><button
+												type="button" class="btn btn-primary" data-toggle="tooltip"
+												title="Add More" (click)='addGroupByList(i)'>
+												<i class="small material-icons">add</i>
+											</button></span>
+									</p>
+								</div>
+							</div>
+							<div class="col-sm-3"></div>
+						</div>
+						<div class="row" style="margin-bottom: 5px;">
+							<span class="col-sm-9"></span>
+						</div>
+					</div>
+					<div class="row" style="float: right; margin-right: 1%; padding-top:1%">
+						<span>
+							<button class="btn btn-primary" name="saveNRun"
+								(click)="createReport()" data-toggle="tooltip"
+								title=" Save and Run" [disabled]="(!reportForm.valid) || (!selectedColumns.length >0) ">Save & Run</button>
+						</span>
+						 <span>
+							<button class="btn btn-primary" name="save" data-toggle="tooltip"
+								title="Save" [disabled]="(!reportForm.valid) || (!selectedColumns.length >0) ">Save</button>
+						</span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</section>
+	<app-footer></app-footer>
+</div>

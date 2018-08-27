@@ -1,0 +1,57 @@
+import { Injectable } from '@angular/core';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { HttpClient } from '../OAuth2/httpClient';
+import { AppConstants } from '../app.constants';
+import { Http, Response, ResponseContentType, RequestOptions, Headers } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+
+@Injectable()
+export class ReportService {
+        
+  @BlockUI() blockUI: NgBlockUI;
+  constructor(private http: HttpClient, private _http: Http) {
+
+  }
+  private appData = AppConstants;
+  
+  private getToken() {
+	    let token = JSON.parse(window.localStorage.getItem('token'));
+	    if (token != null || token != undefined) {
+	      return token.value;
+	    }
+	  }
+  
+  getColumns(): Observable<string[]>{
+      return this.http.get(AppConstants.appUrl+"tableName?reportArea=TIMESHEET")
+        .map((response: Response) => response)
+        .catch(this.handleError);
+    }
+  
+  getValues(column){
+		
+		let headers = new Headers();
+	    headers.append('Authorization', 'Bearer ' + this.getToken());
+	    headers.append('Content-Type', 'application/json');
+	    let options = new RequestOptions({headers: headers});
+	    this.blockUI.start('Loading...');
+	    return this._http.post(this.appData.appUrl + 'getValues', JSON.stringify(column), options)
+	      .map((response: Response) => response)
+	      .do(() => {this.blockUI.stop();})
+	      .catch(this.handleError);
+	}
+  
+  getReportNames(reportArea): Observable<string[]>{
+      return this.http.get(this.appData.appUrl + 'getReport?reportArea='+reportArea)
+        .map((response: Response) => response)
+        .catch(this.handleError);
+    }
+  
+  private handleError(error: Response) {
+      console.log(error);
+      if(error.status === 0){
+        return Observable.throw('Problem with server Please contact Administrator');
+      }else{
+        return Observable.throw(error.json().message || 'Please contact Administrator');
+      }
+    }
+}

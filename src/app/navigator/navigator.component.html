@@ -1,0 +1,18 @@
+<nav class="side-navbar">
+	<div class="side-navbar-wrapper">
+		<div
+			class="sidenav-header d-flex align-items-center justify-content-center">
+			<div class="sidenav-header-logo">
+				<a href="index.html" class="brand-small text-center"> <strong>B</strong><strong
+					class="text-primary">D</strong></a>
+			</div>
+		</div>
+		<div class="main-menu">
+			<ul id="side-main-menu" class="side-menu list-unstyled">
+				<li *ngFor="let report of reports; let i = index"><a
+					[routerLink]="['/dashboard',report.desc]"> <i
+						class={{report.icon}}></i><span>{{report.desc}}</span></a></li>
+			</ul>
+		</div>
+	</div>
+</nav>

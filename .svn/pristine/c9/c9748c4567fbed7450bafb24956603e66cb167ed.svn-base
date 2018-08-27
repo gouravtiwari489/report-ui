@@ -1,0 +1,59 @@
+.userTitleFrame{
+	text-align: right !important; 
+	margin-right: 4% !important;
+}
+.userTitle{
+	font-size:25px !important; 
+	font-weight:500 !important;
+}
+
+.logoutStyle{
+	font-size: 22px !important; 
+	cursor:pointer;
+}
+
+.container {
+   position: relative;
+    /* top: -257px; */
+    bottom: 200px;
+}
+.mainRowFrame{
+	padding-left: 35px !important; 
+	margin-bottom: 0px !important;
+}
+
+.layout{
+	padding-right: 6% !important;
+}
+
+.headingBorder{
+	border-bottom: 1px solid #bbb8b8 !important;
+}
+
+.headingStyle{
+	font-size: 20px !important;
+}
+
+.filterRow{
+	margin-top: 1% !important;
+    margin-bottom: 1% !important;
+    border: 1px solid #bbb8b8 !important;
+    border-radius: 8px !important;
+    padding: 5px !important;
+}
+
+.filterText{
+	padding-right: 0px !important;
+}
+.filterName{
+	font-size: 18px !important;
+}
+
+.filterSelectBox{
+	padding-left: 0px !important;
+}
+
+.textStyle {
+	text-align: center !important;
+	font-family: serif !important;
+}

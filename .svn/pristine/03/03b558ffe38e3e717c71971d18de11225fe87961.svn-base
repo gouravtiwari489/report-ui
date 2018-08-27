@@ -1,0 +1,13 @@
+.pointer {
+	cursor: pointer;
+}
+
+.userText {
+	font-size: 16px;
+	text-transform: uppercase;
+}
+
+.container-fluid {
+	text-align: center;
+	font-size: 25px;
+}

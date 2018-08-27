@@ -1,0 +1,19 @@
+<!-- <div class="container">
+	<header><span class="logoStyle"><img src="../assets/images/logo.png" class="imgStyle">
+	</span> Report Generator <span><a (click)="logoutUser()" data-toggle="tooltip" title="Logout"> <i class=" material-icons logoutStyle">power_settings_new</i></a></span> <span class="userTitle"> {{user}}  </span><span><i class=" material-icons userIcon">account_circle</i></span></header>
+</div>
+ -->
+<header class="header">
+	<nav class="navbar">
+		<div class="container-fluid">
+			<strong class="text-primary">Report Generator</strong>
+
+			<div class="pull-right">
+				<span><strong class="text-primary userText">{{user}}</strong><a
+					(click)="logoutUser()" data-toggle="tooltip" title="Logout"> <i
+						class="material-icons logoutStyle pointer">power_settings_new</i></a>
+				</span>
+			</div>
+		</div>
+	</nav>
+</header>

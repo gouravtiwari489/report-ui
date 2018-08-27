@@ -1,0 +1,167 @@
+import { HttpClient } from '../../OAuth2/httpClient';
+import { DashboardComponent } from '../../dashboard/dashboard.component';
+import { DashboardService } from '../../dashboard/dashboard.service';
+import { OauthService } from '../../OAuth2/oauth.service';
+import { Report } from '../Report';
+import { ViewReportService } from './viewReportService';
+import { Component, OnInit, Input } from '@angular/core';
+import { ReportService } from '../report.service';
+import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
+import { Filter } from '../Filter';
+import { Project } from '../Project';
+import { AppConstants } from '../../app.constants';
+import { SimpleTimer } from 'ng2-simple-timer';
+import * as _ from 'underscore';
+
+@Component( {
+    selector: 'app-view-report',
+    templateUrl: './view-report.component.html',
+    styleUrls: ['./view-report.component.css'],
+    providers: [ViewReportService, DashboardService, OauthService, HttpClient, ReportService]
+} )
+export class ViewReportComponent implements OnInit {
+
+    userName: string;
+    reportsViewResponse = [];
+    val: string;
+    reportData = [];
+    reports = [];
+    viewResponseData = [];
+    listOfColumns: Array<string>
+    reportViewData = new Report();
+    isCreatingReport: boolean;
+    display = 'none';
+    isprojectInclude = true;
+    fromDate: Date;
+    toDate: Date;
+    fromApprovedDate: Date;
+    toApprovedDate: Date;
+    maxDate = new Date();
+    filter = new Filter();
+    projects = [];
+    allFilters = [];
+    messageTimerId: string;
+    skipTimerFirstCall: boolean;
+    errorMessage: string = '';
+    successMessage: string = '';
+    reportView : any;
+    report = new Report();
+    reportCopy = new Report();
+    constructor(private viewService: ViewReportService, private reportService: ReportService,
+        private route: ActivatedRoute, private st: SimpleTimer ) {
+        this.route.queryParams.subscribe( params => {
+            this.reportView = params["report"];
+            this.report = JSON.parse(this.reportView);
+//            console.log(this.report);
+            this.viewResponseData = params["viewResponse"];
+            this.modifyByteArray( this.viewResponseData );
+        });
+    }
+
+    ngOnInit() {
+       
+        this.reportService.getColumns().subscribe(response => {
+            this.listOfColumns = response;
+            this.st.newTimer(AppConstants.messageTimerName, AppConstants.messageAutoHideSec );
+            this.skipTimerFirstCall = true;
+        });
+
+        this.viewService.getAllFilters().subscribe(response => {
+            this.allFilters = response;
+            //console.log(JSON.stringify(this.filters));
+        } );
+        
+        this.filter.isProjectInclude = true;
+        this.viewService.getAllProject().subscribe(response => {
+            this.projects = response;
+        });
+    }
+
+    modifyByteArray(reportsViewResponse) {
+        this.reportsViewResponse = reportsViewResponse;
+        this.val = '';
+        this.reportData = [];
+        for (let entry of this.reportsViewResponse) {
+            if (entry.match(/[^\r\n]+/g) !== null) {
+                if (entry != ',') {
+                    entry = entry.toString();
+                    this.val = this.val + entry;
+                } else {
+                    this.reportData.push(this.val);
+                    this.val = '';
+                }
+            } else {
+                this.reportData.push(this.val);
+                this.reports.push(this.reportData);
+                this.reportData = [];
+                this.val = '';
+            }
+        }
+    }
+
+    createFilter(isSaveOnly) {
+        
+        this.filter.fromDate = new Date(this.fromDate);
+        this.filter.toDate = new Date(this.toDate);
+        this.filter.fromApprovedDate = new Date(this.fromApprovedDate);
+        this.filter.toApprovedDate = new Date(this.toApprovedDate);
+        
+        if(isSaveOnly){
+            this.reportCopy = new Report();
+            this.reportCopy.filters = [];
+//            console.log(" Save only=="+this.reportCopy);
+            this.reportCopy.filters.push(this.filter);
+            
+        }else{
+            this.reportCopy = _.clone(this.report);
+            this.reportCopy.filters.push(this.filter);
+            this.isCreatingReport = false;
+//            console.log(" Save & Run =="+JSON.stringify(this.reportCopy));
+            this.viewService.generateReport(this.reportCopy, this.isCreatingReport).subscribe(response => {
+              if (response.status = 200) {
+                  this.modifyByteArray(response);
+              }this.setMessage(AppConstants.createFilterSucessMessage, AppConstants.successMessageType);
+            },
+                Error => {
+                    this.setMessage(Error, AppConstants.errorMessageType);
+                }
+            );
+        }
+        this.viewService.createNewFilter(this.reportCopy).subscribe(response => {
+            if (response.status = 200) {
+            }
+            this.setMessage(AppConstants.createFilterSucessMessage, AppConstants.successMessageType);
+        },
+            Error => {
+                this.setMessage(Error, AppConstants.errorMessageType);
+            }
+        );
+    }
+
+    setMessage(message, type) {
+        this.errorMessage = AppConstants.emptyString;
+        this.successMessage = AppConstants.emptyString;
+        if (type === AppConstants.errorMessageType) {
+            this.errorMessage = message;
+        } else if (type === AppConstants.successMessageType ) {
+            this.successMessage = message;
+        }
+
+        this.st.unsubscribe(this.messageTimerId);
+        this.messageTimerId = this.st.subscribe(AppConstants.messageTimerName, () => this.closeMessageBox( type ) );
+        this.skipTimerFirstCall = true;
+    }
+    closeMessageBox(message) {
+        if (this.skipTimerFirstCall) {
+            this.skipTimerFirstCall = false;
+        } else {
+            if (message === AppConstants.successMessageType) {
+                this.successMessage = AppConstants.emptyString;
+            } else if (message === AppConstants.errorMessageType) {
+                this.errorMessage = AppConstants.emptyString;
+            }
+            this.st.unsubscribe(this.messageTimerId);
+        }
+    }
+
+}

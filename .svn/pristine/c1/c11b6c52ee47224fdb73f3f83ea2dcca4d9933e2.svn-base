@@ -1,0 +1,285 @@
+import {Component, OnInit} from '@angular/core';
+import {ReportService} from './report.service';
+import {HttpClient} from '../OAuth2/httpClient';
+import {Report} from './Report';
+import {Column} from './Column';
+import {ViewReportService} from './view-report/viewReportService';
+import {Router, NavigationExtras} from '@angular/router';
+import {NumericLiteral} from 'typescript';
+import {DashboardService} from '../dashboard/dashboard.service';
+import {OauthService} from '../OAuth2/oauth.service';
+import * as _ from 'underscore';
+import { Project } from './Project';
+import { Filter, Field } from './Filter';
+
+@Component({
+  selector: 'app-report',
+  templateUrl: './report.component.html',
+  styleUrls: ['./report.component.css'],
+  providers: [ReportService, DashboardService, HttpClient, ViewReportService, OauthService]
+})
+export class ReportComponent implements OnInit {
+  tables = {};
+  arraysColumns = [];
+  listOfColumns: Array<any> = [];
+  listOfColumnsCopy: Array<any> = [];
+  newReport = new Report();
+  selectedColumns = [];
+  allColumns: Array<string> = [];
+  selectedColumn: Array<string> = [];
+  availableColumns: Array<string> = [];
+  columns=[];
+  tableColumnMap = {};
+  obj: {[k: string]: any} = {};
+  view: boolean = true;
+  isCreatingReport: boolean;
+  hideContent: boolean= true;
+  reportDetailTab = true;
+  orderByTab = false;
+  groupByTab = false;
+  isprojectInclude = true;
+  fromDate: Date;
+  toDate: Date;
+  fromApprovedDate: Date;
+  toApprovedDate: Date;
+  maxDate = new Date();
+  filter = new Filter();
+  projects = [];
+  allFilters = [];
+  detailReport: boolean= true;
+  showGroupBy: boolean= false;
+  showOrderBy: boolean =false;
+  showFilter: boolean = true;
+  summaryReport: boolean;
+  summaryWithGraph: boolean ;
+  crosstabReport: boolean;
+  constructor(private reportService: ReportService, private viewReportService: ViewReportService,
+    private router: Router, private dashboardService: DashboardService, private oauth:OauthService) {}
+
+  ngOnInit(): void {
+      var user = this.oauth.getLoggedUser();
+      this.newReport.owner= user.username;
+      this.newReport.orderByList.push("");
+      this.reportService.getColumns().subscribe(response => {
+      this.tables = response;
+      this.arraysColumns = _.union(_.values(this.tables));
+      for (let val of this.arraysColumns) {
+        this.listOfColumns = _.union(this.listOfColumns, val)
+      }
+      this.listOfColumns.sort( function(column1, column2) {
+  	    if ( column1.columnDisplayName < column2.columnDisplayName ){
+  	    	return -1;
+  	    }else if( column1.columnDisplayName > column2.columnDisplayName ){
+  	        return 1;
+  	    }else{
+  	    	return 0;	
+  	    }
+  		});
+      this.listOfColumnsCopy = JSON.parse(JSON.stringify(this.listOfColumns));
+      this.allColumns = JSON.parse(JSON.stringify(this.listOfColumns));
+    });
+    
+    this.filter.isProjectInclude = true;
+    this.viewReportService.getAllProject().subscribe(response => {
+        this.projects = response;
+    });
+  }
+
+  createReport() {
+      var date = new Date();
+    this.isCreatingReport = true;
+    this.newReport.sharedTo = ' ';
+    this.newReport.actions = '';
+    this.newReport.createdDate = date.toDateString();
+    this.newReport.lastExcecution = date.toDateString();
+    var map = new Map<string, any[]>();
+    for (let column of this.selectedColumns) {
+      for (let key in this.tables) {
+        if (_.indexOf(this.tables[key], column) != -1) {
+
+          if (!(map.has(key))) {
+            var list = [];
+            let newColumn = new Column();
+            list.push(column);
+            map.set(key, list);
+          } else {
+            if (!_.contains(map.get(key), column)) {
+              map.get(key).push(column);
+            }
+          }
+        }
+      }
+    }
+    this.newReport.tableColumnMap = map;
+    if(this.newReport.orderByList[0] === ""){
+        this.newReport.orderByList = [];
+    }
+    if(this.newReport.groupByList[0].columnName === ""){
+       this.newReport.groupByList = [];
+    }
+    
+  this.filter.fromDate = new Date(this.fromDate);
+  this.filter.toDate = new Date(this.toDate);
+  this.filter.fromApprovedDate = new Date(this.fromApprovedDate);
+  this.filter.toApprovedDate = new Date(this.toApprovedDate);
+    this.newReport.filters = [];
+    this.filter.fields = [];
+    this.newReport.filters.push(this.filter);
+    console.log("ReportView " + JSON.stringify(this.newReport));
+    this.viewReportService.generateReport(this.newReport, this.isCreatingReport).subscribe(response => {
+      if (response.status = 200) {
+        let navigationExtras: NavigationExtras = {
+          queryParams: {
+            "viewResponse": response._body,
+            "report" : JSON.stringify(this.newReport)
+          }
+        };
+        this.router.navigate(['viewReport'], navigationExtras);
+      }
+    });
+  }
+
+  addToExcludedALL() {
+    this.selectedColumns = JSON.parse(JSON.stringify(this.allColumns));
+    for(let i in  this.selectedColumns){
+        this.selectedColumns[i].disable=false;
+    }
+    this.columns= JSON.parse(JSON.stringify(this.selectedColumns));
+    this.listOfColumns = [];
+  }
+  addToExcludedRepeat() {
+    if (this.availableColumns.length != 0) {
+      for (let value of this.availableColumns) {
+        if (this.selectedColumns.indexOf(value) == -1) {
+
+          this.selectedColumns.push(value);
+          for (let key in this.listOfColumns) {
+            if (value == this.listOfColumns[key]) {
+              this.listOfColumns.splice(parseInt(key), 1);
+            }
+          }
+        }
+      }
+      for(let i in  this.selectedColumns){
+          
+          this.selectedColumns[i].disable=false;
+      }
+      this.columns= JSON.parse(JSON.stringify(this.selectedColumns));
+    }
+  }
+  removeFromExcludedRepeat() {
+    if (this.selectedColumn.length != 0) {
+      for (let value of this.selectedColumn) {
+        if (this.listOfColumns.indexOf(value) == -1) {
+          this.listOfColumns.push(value);
+          for (let key in this.selectedColumns) {
+            if (value == this.selectedColumns[key]) {
+              this.selectedColumns.splice(parseInt(key), 1);
+            }
+          }
+        }
+      }
+    }
+    this.columns= JSON.parse(JSON.stringify(this.selectedColumns));
+  }
+  removeFromExcludedALL() {
+    this.listOfColumns = JSON.parse(JSON.stringify(this.allColumns));
+    this.selectedColumns = [];
+    this.columns= JSON.parse(JSON.stringify(this.selectedColumns));
+  }
+  
+  nextScreen() {
+    this.hideContent = !this.hideContent;
+  }
+  previosScreen(){
+      this.hideContent = !this.hideContent;
+  }
+  addGroupByList( i ) {
+      let index = _.findLastIndex( this.columns, {
+          columnName: this.newReport.groupByList[i].columnName
+      } );
+      if ( index != -1 ) {
+          this.columns[index].disable = true;
+      }
+      if ( this.newReport.groupByList[i].columnName != "" ) {
+          this.newReport.groupByList.push( { operation: '', columnName: '' } );
+      }
+
+  }
+  addOrderByList( i ) {
+      let index = _.findLastIndex( this.selectedColumns, {
+          columnName: this.newReport.orderByList[i]
+      } );
+      if ( index != -1 ) {
+          this.selectedColumns[index].disable = true;
+      }
+      if ( this.newReport.orderByList[i] != "" ) {
+          this.newReport.orderByList.push( "" );
+      }
+  }
+  removeOrderByList( i ) {
+      let index = _.findLastIndex( this.selectedColumns, {
+          columnName: this.newReport.orderByList[i]
+      } );
+      if ( index != -1 ) {
+          this.selectedColumns[index].disable = false;
+      }
+      this.newReport.orderByList.splice( i, 1 );
+      if ( this.newReport.orderByList.length == 0 ) {
+          this.newReport.orderByList.push( "" );
+      }
+  }
+  removeGroupByList( i ) {
+      let index = _.findLastIndex( this.columns, {
+          columnName: this.newReport.groupByList[i].columnName
+      } );
+      if ( index != -1 ) {
+          this.columns[index].disable = false;
+      }
+      this.newReport.groupByList.splice( i, 1 );
+      if ( this.newReport.groupByList.length == 0 ) {
+          this.newReport.groupByList.push( { operation: '', columnName: '' } );
+      }
+  }
+
+  viewReportType(name){
+      if(name === 'detailReport'){
+          this.showGroupBy= false;
+          this.showOrderBy= false;
+          this.showFilter= true;
+      }
+      if(name === 'summaryReport'){
+          this.showGroupBy= true;
+          this.showOrderBy= false;
+          this.showFilter= false;
+      }
+      if(name === 'summaryWithGraph'){
+          this.showGroupBy= true;
+          this.showFilter= false;
+          this.showOrderBy= true;
+      }
+      if(name === 'crosstabReport'){
+          this.showGroupBy= false;
+          this.showFilter= false;
+          this.showOrderBy= false;
+      }
+  }
+  moveUp() {
+      let index = _.indexOf( this.selectedColumns, this.selectedColumn[0] );
+      if ( index != 0 ) {
+          let temp = _.clone( this.selectedColumns[index - 1] );
+          this.selectedColumns[index - 1] = _.clone( this.selectedColumn[0] );
+          this.selectedColumns[index] = temp;
+          this.selectedColumn = [];
+      }
+  }
+  moveDown() {
+      let index = _.indexOf( this.selectedColumns, this.selectedColumn[0] );
+      if ( index != this.selectedColumns.length-1 ) {
+          let temp = _.clone( this.selectedColumns[index + 1] );
+          this.selectedColumns[index + 1] = _.clone( this.selectedColumn[0] );
+          this.selectedColumns[index] = temp;
+          this.selectedColumn = [];
+      }
+}
+}
